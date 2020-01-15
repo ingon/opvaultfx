@@ -1,0 +1,99 @@
+.root {
+	app-fg: #fefefe;
+	app-bg: #202020;
+	app-border: #0f0d0d;
+}
+
+.root {
+	-fx-font-family: sans-serif;
+	-fx-font-size: 14pt;
+	-fx-padding: 0px;
+	-fx-background-color: app-bg;	
+}
+
+.label {
+	-fx-text-fill: app-fg;
+}
+
+.scroll-pane, .scroll-pane .viewport {
+	-fx-background-color: app-bg;
+	-fx-padding: 0px;	
+}
+
+.scroll-bar, .list-view .scroll-bar {
+	-fx-background-color: app-bg;
+}
+
+.scroll-bar .track, .list-view .scroll-bar .track {
+	-fx-background-color: app-bg;
+}
+
+.scroll-bar .thumb, .list-view .scroll-bar .thumb {
+	-fx-background-color: derive(app-bg, 10%);
+}
+
+.scroll-bar .decrement-button:hover, .scroll-bar .increment-button:hover, 
+.list-view .scroll-bar .decrement-button:hover, .list-view .scroll-bar .increment-button:hover 
+{
+	-fx-background-color: derive(app-bg, 10%);
+}
+
+#unlocked {
+	-fx-background-color: app-bg;
+}
+
+#unlocked .split-pane-divider {
+	-fx-border-color: app-border;
+	-fx-margin: 0px;
+	-fx-padding: 0px;
+}
+
+#list .list-view {
+	-fx-padding: 0px;
+	-fx-background-color: app-bg;
+}
+
+#list .list-cell {
+	-fx-background-color: app-bg;
+	-fx-text-fill: app-fg;
+}
+
+#list .list-cell:selected {
+	-fx-background-color: derive(app-bg, 20%);
+}
+
+.item-list-cell-title {
+	-fx-font-weight: bold;
+}
+
+.item-list-cell-detail {
+	-fx-font-size: 13pt;
+	-fx-font-weight: lighter;
+}
+
+.item-detail-box {
+	-fx-padding: 1em;
+	-fx-spacing: 1em;
+}
+
+.item-sections {
+	-fx-spacing: 1em;
+}
+
+.item-section, .item-fields {
+	-fx-spacing: 0.3em;
+	-fx-padding: 1em;
+	-fx-background-color: derive(app-bg, 5%);
+	-fx-border-color: derive(app-bg, 20%);
+	-fx-background-radius: 8px;
+	-fx-border-radius: 8px;
+}
+
+.item-section-header {
+	-fx-font-weight: bold;
+	-fx-padding: 0 0 0.5em 0;
+}
+
+.item-section-field-header {
+	-fx-font-size: 13pt;
+}
