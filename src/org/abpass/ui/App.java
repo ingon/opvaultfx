@@ -1,13 +1,14 @@
 package org.abpass.ui;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
+import org.abpass.opvault.Exceptions.ProfileException;
 import org.abpass.opvault.Profile;
 import org.abpass.opvault.Vault;
 import org.abpass.ui.util.ReloadSceneCssService;
+import org.json.simple.parser.ParseException;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -63,11 +64,13 @@ public class App extends Application {
                     try {
                         unlockedPane.setProfile(profile);
                         stack.getChildren().set(0, unlockedPane);
-                    } catch (IOException exc) {
-                        exc.printStackTrace();
                     } catch (InvalidOpdataException e) {
                         e.printStackTrace();
                     } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    } catch (ProfileException e) {
+                        e.printStackTrace();
+                    } catch (ParseException e) {
                         e.printStackTrace();
                     }
                 }

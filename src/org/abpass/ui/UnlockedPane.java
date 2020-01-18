@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
+import org.abpass.opvault.Exceptions.ProfileException;
 import org.abpass.opvault.Profile;
+import org.json.simple.parser.ParseException;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -41,12 +43,14 @@ public class UnlockedPane extends SplitPane {
                     }
                 } catch (InvalidOpdataException | GeneralSecurityException e) {
                     e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
             }
         });
     }
     
-    public void setProfile(Profile profile) throws IOException, InvalidOpdataException, GeneralSecurityException {
+    public void setProfile(Profile profile) throws ProfileException, InvalidOpdataException, GeneralSecurityException, ParseException {
         this.profile.setValue(profile);
         
         this.list.showProfile(profile);

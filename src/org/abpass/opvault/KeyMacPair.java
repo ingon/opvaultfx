@@ -1,7 +1,5 @@
 package org.abpass.opvault;
 
-import java.security.GeneralSecurityException;
-
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
 
 public class KeyMacPair implements AutoCloseable {
@@ -13,7 +11,7 @@ public class KeyMacPair implements AutoCloseable {
         this.mac = mac;
     }
     
-    public byte[] decrypt(byte[] src) throws InvalidOpdataException, GeneralSecurityException {
+    public byte[] decrypt(byte[] src) throws InvalidOpdataException {
         return Decrypt.opdata(src, key, mac);
     }
 

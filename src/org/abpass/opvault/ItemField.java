@@ -1,7 +1,5 @@
 package org.abpass.opvault;
 
-import java.util.Map;
-
 public class ItemField {
     public enum Type {
         Password("P"),
@@ -58,29 +56,38 @@ public class ItemField {
             throw new IllegalArgumentException("unknown designation: " + s);
         }
     }
-
-    public final Map<String, Object> data;
     
-    public ItemField(Map<String, Object> data) {
-        this.data = data;
+    static Json<ItemField> newParser() {
+        var handler = new Json<ItemField>(ItemField::new);
+        handler.stringProperty("type", (t, o) -> t.type = Type.of(o));
+        handler.stringProperty("name", (t, o) -> t.name = o);
+        handler.stringProperty("value", (t, o) -> t.value = o);
+        handler.stringProperty("designation", (t, o) -> t.designation = Designation.of(o));
+        return handler;
+    }
+
+    private Type type;
+    private String name;
+    private String value;
+    private Designation designation;
+    
+    ItemField() {
     }
 
     public Type getType() {
-        var s = (String) data.get("type");
-        return Type.of(s);
+        return type;
     }
     
     public String getName() {
-        return (String) data.get("name");
+        return name;
     }
 
     public String getValue() {
-        return (String) data.get("value");
+        return value;
     }
 
     public Designation getDesignation() {
-        var s = (String) data.get("designation");
-        return Designation.of(s);
+        return designation;
     }
     
     @Override

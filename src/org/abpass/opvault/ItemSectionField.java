@@ -1,7 +1,5 @@
 package org.abpass.opvault;
 
-import java.util.Map;
-
 public class ItemSectionField {
     public enum Kind {
         Concealed("concealed"),
@@ -33,32 +31,43 @@ public class ItemSectionField {
         }
     }
     
-    public final Map<String, Object> data;
+    static Json<ItemSectionField> newParser() {
+        var handler = new Json<ItemSectionField>(ItemSectionField::new);
+        handler.stringProperty("k", (t, o) -> t.kind = Kind.of(o));
+        handler.stringProperty("n", (t, o) -> t.name = o);
+        handler.stringProperty("t", (t, o) -> t.title = o);
+        handler.primitiveProperty("v", (t, o) -> t.value = o != null ? o.toString() : null);
+        
+        handler.valueProperty("a", (t, o) -> System.out.println("SF [a]: " + o)); // {guarded=yes, generate=off, clipboardFilter=0123456789}?
+        handler.valueProperty("zip", (t, o) -> System.out.println("SF [zip]: " + o)); // ?
+        handler.valueProperty("state", (t, o) -> System.out.println("SF [state]: " + o)); // ?
+        handler.valueProperty("country", (t, o) -> System.out.println("SF [country]: " + o)); // ?
+        handler.valueProperty("street", (t, o) -> System.out.println("SF [country]: " + o)); // ?
+        
+        return handler;
+    }
     
-    public ItemSectionField(Map<String, Object> data) {
-        this.data = data;
+    Kind kind;
+    String name;
+    String title;
+    String value;
+    
+    ItemSectionField() {
     }
     
     public Kind getKind() {
-        var kind = (String) data.get("k");
-        return Kind.of(kind);
+        return kind;
     }
     
     public String getName() {
-        return (String) data.get("n");
+        return name;
     }
 
     public String getTitle() {
-        return (String) data.get("t");
+        return title;
     }
 
     public Object getValue() {
-        return data.get("v");
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("sectionField [ kind=%s, name=%s, title=%s, value=%s ]", 
-            getKind(), getName(), getTitle(), getValue());
+        return value;
     }
 }

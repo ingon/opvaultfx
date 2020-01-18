@@ -8,6 +8,7 @@ import org.abpass.opvault.ItemDetail;
 import org.abpass.opvault.ItemField;
 import org.abpass.opvault.ItemOverview;
 import org.abpass.opvault.ItemSection;
+import org.json.simple.parser.ParseException;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -64,7 +65,7 @@ public class DetailsPane extends VBox {
         getChildren().add(detailScroll);
     }
     
-    public void showItem(Item item, ItemOverview overview) throws InvalidOpdataException, GeneralSecurityException {
+    public void showItem(Item item, ItemOverview overview) throws InvalidOpdataException, GeneralSecurityException, ParseException {
         this.item.setValue(item);
         this.overview.setValue(overview);
         

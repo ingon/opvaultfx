@@ -1,78 +1,47 @@
 package org.abpass.opvault;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.abpass.json.JsonArrayHandler;
+import org.abpass.json.JsonStringHandler;
+import org.abpass.json.JsonTypedHandler;
+
 public class ItemOverview {
-    public final Map<String, Object> data;
-
-    public ItemOverview(Map<String, Object> data) {
-        this.data = data;
+    static JsonTypedHandler<ItemOverview> newParser() {
+        Json<ItemOverview> handler = new Json<ItemOverview>(ItemOverview::new);
+        handler.stringProperty("title", (t, o) -> t.title = o);
+        handler.stringProperty("ainfo", (t, o) -> t.ainfo = o);
+        handler.urlProperty("url", (t, o) -> t.url = o);
+        handler.arrayProperty("URLs", new JsonArrayHandler<>(ItemUrl.newParser()), 
+            (t, o) -> t.urls = o.stream().map((u) -> u.url).collect(Collectors.toList()));
+        handler.arrayProperty("tags", new JsonArrayHandler<String>(new JsonStringHandler()), (t, o) -> t.tags = o);
+        handler.numberProperty("ps", (t, o) -> t.ps = o.intValue());
+        return handler;
     }
+    
+    private String title;
+    private String ainfo;
+    private URL url;
+    private List<URL> urls;
+    private List<String> tags;
+    private Integer ps;
 
+    ItemOverview() {
+    }
+    
     public String getTitle() {
-        return (String) data.get("title");
+        return title;
     }
     
-    public List<URL> getURLs() {
-        var raw = (List<Object>) data.get("URLs");
-        if (raw == null) {
-            return Collections.emptyList();
-        }
-        return raw.stream()
-                .map((o) -> (Map<String, Object>)o)
-                .map((js) -> {
-                    try {
-                        var s = (String) js.get("u");
-                        return new URL(s);
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .collect(Collectors.toList());
-    }
-    
-    public URL getURL() {
-        var raw = (String) data.get("url");
-        if (raw == null) {
-            return null;
-        }
-        try {
-            return new URL(raw);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    public String getAInfo() {
-        return (String) data.get("ainfo");
-    }
-
-    public List<String> getTags() {
-        var raw = (List<Object>) data.get("tags");
-        if (raw == null) {
-            return Collections.emptyList();
-        }
-        return raw.stream()
-                .map((o) -> (String)o)
-                .collect(Collectors.toList());
-    }
-
-    public Integer getPs() {
-        var n = (Number) data.get("ps");
-        if (n == null) {
-            return null;
-        }
-        return n.intValue();
+    public String getAinfo() {
+        return ainfo;
     }
     
     @Override
     public String toString() {
-        return String.format("overview [ title=%s, url=%s, ainfo=%s, ps=%s, urls=%s, tags=%s]",
-            getTitle(), getURL(), getAInfo(), getPs(), getURLs(), getTags());
+        return String.format("overview [ title=%s, ainfo=%s, url=%s, urls=%s, tags=%s, ps=%s]",
+            title, ainfo, url, urls, tags, ps);
     }
 }

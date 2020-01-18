@@ -22,24 +22,26 @@ public class ItemSectionPane extends VBox {
             getChildren().add(titleLbl);
         }
         
-        for (var f : section.getFields()) {
-            if (f.getValue() == null) {
-                continue;
-            }
-            
-            String v = f.getValue().toString();
-            var titleLbl = new Label(f.getTitle());
-            titleLbl.getStyleClass().add("item-section-field-header");
-            getChildren().add(titleLbl);
-            if (f.getKind() == Kind.Concealed) {
-                var pwd = new PasswordField();
-                pwd.setText(v);
-                pwd.setEditable(false);
-                getChildren().add(pwd);
-            } else {
-                var txt = new TextField(v);
-                txt.setEditable(false);
-                getChildren().add(txt);
+        if (section.getFields() != null) {
+            for (var f : section.getFields()) {
+                if (f.getValue() == null) {
+                    continue;
+                }
+                
+                String v = f.getValue().toString();
+                var titleLbl = new Label(f.getTitle());
+                titleLbl.getStyleClass().add("item-section-field-header");
+                getChildren().add(titleLbl);
+                if (f.getKind() == Kind.Concealed) {
+                    var pwd = new PasswordField();
+                    pwd.setText(v);
+                    pwd.setEditable(false);
+                    getChildren().add(pwd);
+                } else {
+                    var txt = new TextField(v);
+                    txt.setEditable(false);
+                    getChildren().add(txt);
+                }
             }
         }
     }

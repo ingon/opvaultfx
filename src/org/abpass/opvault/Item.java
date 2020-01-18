@@ -3,16 +3,16 @@ package org.abpass.opvault;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Map;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.abpass.json.JsonParser;
+import org.abpass.json.JsonTypedHandler;
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
+import org.json.simple.parser.ParseException;
 
 public class Item {
     public enum Category {
@@ -52,88 +52,86 @@ public class Item {
         }
     }
     
-    public final Profile profile;
-    public final Map<String, Object> data;
-    
-    public Item(Profile profile, Map<String, Object> data) {
-        this.profile = profile;
-        this.data = data;
+    static JsonTypedHandler<Item> newParser(Profile profile) {
+        Json<Item> handler = new Json<Item>(() -> new Item(profile));
+        handler.stringProperty("uuid", (t, o) -> t.uuid = o);
+        handler.stringProperty("category", (t, o) -> t.category = Category.of(o));
+        
+        handler.numberProperty("fave", (t, o) -> t.fave = o.longValue());
+        handler.stringProperty("folder", (t, o) -> t.folder = o);
+        handler.booleanProperty("trashed", (t, o) -> t.trashed = o);
+        
+        handler.instantProperty("created", (t, o) -> t.created = o);
+        handler.instantProperty("updated", (t, o) -> t.updated = o);
+        handler.instantProperty("tx", (t, o) -> t.tx = o);
+        
+        handler.base64Property("hmac", (t, o) -> t.hmac = o);
+        handler.base64Property("o", (t, o) -> t.o = o);
+        handler.base64Property("k", (t, o) -> t.k = o);
+        handler.base64Property("d", (t, o) -> t.d = o);
+
+        return handler;
     }
     
-    public String getUUID() {
-        return (String) data.get("uuid");
+    private final Profile profile;
+    
+    private String uuid;
+    private Category category;
+    
+    private Long fave;
+    private String folder;
+    private boolean trashed;
+    
+    private Instant created;
+    private Instant updated;
+    private Instant tx;
+    
+    private byte[] hmac;
+    private byte[] o;
+    private byte[] k;
+    private byte[] d;
+    
+    Item(Profile profile) {
+        this.profile = profile;
     }
     
     public Category getCategory() {
-        var s = (String) data.get("category");
-        return Category.of(s);
+        return category;
     }
     
-    public ItemOverview getOverview() throws InvalidOpdataException, GeneralSecurityException {
+    public ItemOverview getOverview() throws GeneralSecurityException, InvalidOpdataException, ParseException {
         try (var keys = profile.overviewKeys()) {
             return getOverview(keys);
         }
     }
     
-    public ItemOverview getOverview(KeyMacPair overviewKeys) throws InvalidOpdataException, GeneralSecurityException {
-        var overviewData = getAsBytes("o");
-        if (overviewData.length == 0) {
-            return new ItemOverview(Collections.emptyMap());
+    public ItemOverview getOverview(KeyMacPair overviewKeys) throws InvalidOpdataException, GeneralSecurityException, ParseException {
+        byte[] overview = overviewKeys.decrypt(o);
+        try {
+            return JsonParser.parse(overview, ItemOverview.newParser());
+        } finally {
+            Decrypt.wipe(overview);
         }
+    }
         
-        byte[] decOverviewData = overviewKeys.decrypt(overviewData);
-        Map<String, Object> jsonData = Json.parse(decOverviewData);
-        return new ItemOverview(jsonData);
-    }
-    
-    public Instant getCreated() {
-        var n = (Number) data.get("created");
-        return Instant.ofEpochSecond(n.longValue());
-    }
-
-    public Instant getUpdated() {
-        var n = (Number) data.get("updated");
-        return Instant.ofEpochSecond(n.longValue());
-    }
-
-    public Instant getTx() {
-        var n = (Number) data.get("tx");
-        return Instant.ofEpochSecond(n.longValue());
-    }
-
-    public Long getFave() {
-        var n = (Number) data.get("fave");
-        if (n == null) {
-            return null;
+    public ItemDetail getDetail() throws InvalidOpdataException, GeneralSecurityException, ParseException {
+        try (var keys = itemKeys()) {
+            byte[] detail = keys.decrypt(d);
+            try {
+                return JsonParser.parse(detail, ItemDetail.newParser());
+            } finally {
+                Decrypt.wipe(detail);
+            }
         }
-        return n.longValue();
-    }
-    
-    public String getFolder() {
-        return (String) data.get("folder");
-    }
-
-    public boolean isTrashed() {
-        return (Boolean) data.get("trashed");
-    }
-    
-    public ItemDetail getDetail() throws InvalidOpdataException, GeneralSecurityException {
-        var detailsData = itemKeys().decrypt(getAsBytes("d"));
-        Map<String, Object> jsonData = Json.parse(detailsData);
-        return new ItemDetail(jsonData);
     }
     
     private KeyMacPair itemKeys() throws InvalidOpdataException, GeneralSecurityException {
-        byte[] key = getAsBytes("k");
-        if (key.length == 0) {
-            throw new RuntimeException("no key");
-        }
-        
         var master = profile.masterKeys();
         
-        var data = Arrays.copyOfRange(key, 0, key.length - 32);
-        var mac = Arrays.copyOfRange(key, key.length - 32, key.length);
+        var data = Arrays.copyOfRange(k, 0, k.length - 32);
+        var mac = Arrays.copyOfRange(k, k.length - 32, k.length);
         
+        // check data against its mac
         var mm = Mac.getInstance("HmacSHA256");
         mm.init(new SecretKeySpec(master.mac, "SHA256"));
         var calcMac = mm.doFinal(data);
@@ -141,6 +139,7 @@ public class Item {
             throw new RuntimeException("invalid keys");
         }
         
+        // extract the keys
         SecretKeySpec spec = new SecretKeySpec(master.key, "AES");
         IvParameterSpec ivSpec = new IvParameterSpec(Arrays.copyOfRange(data, 0, 16));
         Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
@@ -149,16 +148,5 @@ public class Item {
         
         return new KeyMacPair(Arrays.copyOfRange(keys, keys.length - 64, keys.length - 32), 
             Arrays.copyOfRange(keys, keys.length - 32, keys.length));
-    }
-
-    private byte[] getAsBytes(String key) {
-        var val = (String) data.get(key);
-        return Base64.getDecoder().decode(val);
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("item [ uuid=%s, category=%s, created=%s, updated=%s, tx=%s, fave=%s, folder=%s ]", 
-            getUUID(), getCategory(), getCreated(), getUpdated(), getTx(), getFave(), getFolder());
     }
 }

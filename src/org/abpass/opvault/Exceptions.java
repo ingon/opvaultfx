@@ -72,19 +72,35 @@ public class Exceptions {
         }
     }
 
-    public static class ProfileMissingPreambleException extends ProfileException {
+    public static class ProfileFormatException extends ProfileException {
         private static final long serialVersionUID = 1L;
 
-        public ProfileMissingPreambleException(Path path) {
-            super("profile %s is missing preamble", path.getParent().getFileName());
+        public ProfileFormatException(Path path) {
+            super("profile %s incorrect format", path.getParent().getFileName());
         }
     }
     
-    public static class ProfileCannotReadException extends ProfileException {
+    public static class ProfileReadException extends ProfileException {
         private static final long serialVersionUID = 1L;
 
-        public ProfileCannotReadException(Path path, IOException exc) {
+        public ProfileReadException(Path path, Exception exc) {
             super(exc, "profile %s cannot be read: %s", path.getParent().getFileName(), exc.getMessage());
+        }
+    }
+
+    public static class ProfileBandFormatException extends ProfileException {
+        private static final long serialVersionUID = 1L;
+
+        public ProfileBandFormatException(Path path) {
+            super("profile %s band incorrect format", path.getParent().getFileName());
+        }
+    }
+
+    public static class ProfileBandReadException extends ProfileException {
+        private static final long serialVersionUID = 1L;
+        
+        public ProfileBandReadException(Path path, Exception exc) {
+            super(exc, "profile %s band cannot be read", path.getParent().getFileName());
         }
     }
     

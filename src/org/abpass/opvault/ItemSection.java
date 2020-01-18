@@ -1,38 +1,34 @@
 package org.abpass.opvault;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import org.abpass.json.JsonArrayHandler;
 
 public class ItemSection {
-    public final Map<String, Object> data;
+    static Json<ItemSection> newParser() {
+        var handler = new Json<ItemSection>(ItemSection::new);
+        handler.stringProperty("name", (t, o) -> t.name = o);
+        handler.stringProperty("title", (t, o) -> t.name = o);
+        handler.arrayProperty("fields", new JsonArrayHandler<ItemSectionField>(ItemSectionField.newParser()), (t, o) -> t.fields = o);
+        return handler;
+    }
     
-    public ItemSection(Map<String, Object> data) {
-        this.data = data;
+    private String name;
+    private String title;
+    private List<ItemSectionField> fields;
+    
+    ItemSection() {
     }
     
     public String getName() {
-        return (String) data.get("name");
+        return name;
     }
 
     public String getTitle() {
-        return (String) data.get("title");
+        return title;
     }
 
     public List<ItemSectionField> getFields() {
-        var raw = (List<Object>) data.get("fields");
-        if (raw == null) {
-            return Collections.emptyList();
-        }
-        return raw.stream()
-                .map((o) -> (Map<String, Object>)o)
-                .map(ItemSectionField::new)
-                .collect(Collectors.toList());
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("section [ name=%s, title=%s ]", getName(), getTitle());
+        return fields;
     }
 }

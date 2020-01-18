@@ -1,13 +1,15 @@
 package org.abpass.ui;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
+import org.abpass.opvault.Exceptions.ProfileException;
+import org.abpass.opvault.Item.Category;
 import org.abpass.opvault.ItemOverview;
 import org.abpass.opvault.Profile;
+import org.json.simple.parser.ParseException;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -38,7 +40,7 @@ public class ListPane extends VBox {
     private static final Comparator<ItemWithOverview> _NULL_SAFE_ITEM = 
             Comparator.nullsFirst(Comparator.comparing((o) -> o.overview, _NULL_SAFE_OVERVIEW)); 
     
-    private static final Predicate<ItemWithOverview> ALL_PREDICATE = (i) -> true;
+    private static final Predicate<ItemWithOverview> ALL_PREDICATE = (i) -> i.item.getCategory() != Category.Tombstone;
     
     private final ListProperty<ItemWithOverview> allItems = 
             new SimpleListProperty<ItemWithOverview>(this, "allItems", FXCollections.observableArrayList());
@@ -89,7 +91,7 @@ public class ListPane extends VBox {
         });
     }
     
-    public void showProfile(Profile profile) throws InvalidOpdataException, GeneralSecurityException, IOException {
+    public void showProfile(Profile profile) throws ProfileException, InvalidOpdataException, GeneralSecurityException, ParseException {
         var items = profile.getItems();
         
         this.allItems.clear();
@@ -153,7 +155,7 @@ public class ListPane extends VBox {
             grid.maxWidthProperty().bind(getListView().widthProperty().subtract(44));
             
             title.setText(item.overview.getTitle());
-            detail.setText(item.overview.getAInfo());
+            detail.setText(item.overview.getAinfo());
             setGraphic(grid);
         }
     }

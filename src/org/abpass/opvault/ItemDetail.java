@@ -1,45 +1,40 @@
 package org.abpass.opvault;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import org.abpass.json.JsonArrayHandler;
+import org.abpass.json.JsonTypedHandler;
 
 public class ItemDetail {
-    public final Map<String, Object> data;
-    
-    public ItemDetail(Map<String, Object> data) {
-        this.data = data;
+    static JsonTypedHandler<ItemDetail> newParser() {
+        Json<ItemDetail> handler = new Json<ItemDetail>(ItemDetail::new);
+        handler.stringProperty("notesPlain", (t, o) -> t.notes = o);
+        handler.arrayProperty("fields", new JsonArrayHandler<ItemField>(ItemField.newParser()), (t, o) -> t.fields = o);
+        handler.arrayProperty("sections", new JsonArrayHandler<ItemSection>(ItemSection.newParser()), (t, o) -> t.sections = o);
+        
+        handler.valueProperty("htmlForm", (t, o) -> System.out.println("htmlForm: " + o));
+        handler.valueProperty("passwordHistory", (t, o) -> System.out.println("passwordHistory: " + o));
+        
+        return handler;
     }
     
-    public List<ItemField> getFields() {
-        var raw = (List<Object>) data.get("fields");
-        if (raw == null) {
-            return Collections.emptyList();
-        }
-        return raw.stream()
-                .map((o) -> (Map<String, Object>)o)
-                .map(ItemField::new)
-                .collect(Collectors.toList());
+    String notes;
+    List<ItemField> fields = new ArrayList<>();
+    List<ItemSection> sections = new ArrayList<>();
+
+    ItemDetail() {
     }
     
     public String getNotes() {
-        return (String) data.get("notes");
+        return notes;
     }
 
-    public List<ItemSection> getSections() {
-        var raw = (List<Object>) data.get("sections");
-        if (raw == null) {
-            return Collections.emptyList();
-        }
-        return raw.stream()
-                .map((o) -> (Map<String, Object>)o)
-                .map(ItemSection::new)
-                .collect(Collectors.toList());
+    public List<ItemField> getFields() {
+        return fields;
     }
     
-    @Override
-    public String toString() {
-        return String.format("itemdetail [ notes=%s ]", getNotes());
+    public List<ItemSection> getSections() {
+        return sections;
     }
 }

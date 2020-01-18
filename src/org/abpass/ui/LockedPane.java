@@ -1,7 +1,5 @@
 package org.abpass.ui;
 
-import java.security.GeneralSecurityException;
-
 import org.abpass.opvault.Exceptions.InvalidPasswordException;
 import org.abpass.opvault.Profile;
 import org.abpass.opvault.Vault;
@@ -56,7 +54,7 @@ public class LockedPane extends BorderPane {
         try {
             profile.unlock(passwordFld.getText());
             unlocked.setValue(true);
-        } catch (InvalidPasswordException | GeneralSecurityException e) {
+        } catch (InvalidPasswordException e) {
             errorLbl.setText(e.getMessage());
         }
     }
