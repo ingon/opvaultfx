@@ -1,5 +1,7 @@
 package org.abpass.opvault;
 
+import org.json.zero.hl.JsonTypedHandler;
+
 public class ItemSectionField {
     public enum Kind {
         Concealed("concealed"),
@@ -36,21 +38,28 @@ public class ItemSectionField {
         handler.stringProperty("k", (t, o) -> t.kind = Kind.of(o));
         handler.stringProperty("n", (t, o) -> t.name = o);
         handler.stringProperty("t", (t, o) -> t.title = o);
-        handler.primitiveProperty("v", (t, o) -> t.value = o != null ? o.toString() : null);
+        handler.objectProperty("a", A.newParser(), (t, o) -> t.a = o);
         
-        handler.valueProperty("a", (t, o) -> System.out.println("SF [a]: " + o)); // {guarded=yes, generate=off, clipboardFilter=0123456789}?
-        handler.valueProperty("zip", (t, o) -> System.out.println("SF [zip]: " + o)); // ?
-        handler.valueProperty("state", (t, o) -> System.out.println("SF [state]: " + o)); // ?
-        handler.valueProperty("country", (t, o) -> System.out.println("SF [country]: " + o)); // ?
-        handler.valueProperty("street", (t, o) -> System.out.println("SF [country]: " + o)); // ?
+        handler.valueProperty("v", (t, o) -> {
+            if (o == null) {
+                return;
+            }
+            if (o instanceof String) {
+                t.value = (String) o;
+            } else {
+                System.out.println("unexpected type: " + o.getClass());
+                t.value = o.toString();
+            }
+        });
         
         return handler;
     }
     
-    Kind kind;
-    String name;
-    String title;
-    String value;
+    private Kind kind;
+    private String name;
+    private String title;
+    private String value;
+    private A a;
     
     ItemSectionField() {
     }
@@ -69,5 +78,19 @@ public class ItemSectionField {
 
     public Object getValue() {
         return value;
+    }
+    
+    static class A {
+        static JsonTypedHandler<A> newParser() {
+            Json<A> handler = new Json<A>(A::new);
+            handler.stringProperty("guarded", (t, o) -> t.guarded = "yes".equalsIgnoreCase(o));
+            handler.stringProperty("generate", (t, o) -> t.noGenerate = "off".equalsIgnoreCase(o));
+            handler.stringProperty("clipboardFilter", (t, o) -> t.clipboardFilder = o);
+            return handler;
+        }
+        
+        private Boolean guarded;
+        private Boolean noGenerate;
+        private String clipboardFilder;
     }
 }

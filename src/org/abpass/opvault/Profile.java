@@ -13,9 +13,6 @@ import java.util.Map;
 
 import javax.crypto.spec.PBEKeySpec;
 
-import org.abpass.json.JsonMapHandler;
-import org.abpass.json.JsonParser;
-import org.abpass.json.JsonTypedHandler;
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
 import org.abpass.opvault.Exceptions.InvalidPasswordException;
 import org.abpass.opvault.Exceptions.ProfileBandFormatException;
@@ -25,7 +22,10 @@ import org.abpass.opvault.Exceptions.ProfileFormatException;
 import org.abpass.opvault.Exceptions.ProfileNotFileException;
 import org.abpass.opvault.Exceptions.ProfileNotFoundException;
 import org.abpass.opvault.Exceptions.ProfileReadException;
-import org.json.simple.parser.ParseException;
+import org.json.zero.ParseException;
+import org.json.zero.hl.JsonMapHandler;
+import org.json.zero.hl.JsonParser;
+import org.json.zero.hl.JsonTypedHandler;
 
 public class Profile {
     public static final String PROFILE_PREAMBLE = "var profile=";
@@ -86,7 +86,7 @@ public class Profile {
             
             var profileJson = profileData.substring(PROFILE_PREAMBLE.length(), profileData.length() - PROFILE_EPILOGUE.length());
             
-            JsonParser.parse(profileJson, newParser(this));
+            JsonParser.parse(profileJson.toCharArray(), newParser(this));
         } catch(IOException exc) {
             throw new ProfileReadException(profilePath, exc);
         } catch (ParseException exc) {
@@ -190,7 +190,7 @@ public class Profile {
             }
 
             String bandJsonStr = bandStr.substring(BAND_PREAMBLE.length(), bandStr.length() - BAND_EPILOGUE.length());
-            return JsonParser.parse(bandJsonStr, newBandParser(this));
+            return JsonParser.parse(bandJsonStr.toCharArray(), newBandParser(this));
         } catch (IOException exc) {
             throw new ProfileBandReadException(band, exc);
         } catch (ParseException exc) {

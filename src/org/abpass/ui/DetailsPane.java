@@ -8,7 +8,7 @@ import org.abpass.opvault.ItemDetail;
 import org.abpass.opvault.ItemField;
 import org.abpass.opvault.ItemOverview;
 import org.abpass.opvault.ItemSection;
-import org.json.simple.parser.ParseException;
+import org.json.zero.ParseException;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;

@@ -6,7 +6,7 @@ import java.security.GeneralSecurityException;
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
 import org.abpass.opvault.Exceptions.ProfileException;
 import org.abpass.opvault.Profile;
-import org.json.simple.parser.ParseException;
+import org.json.zero.ParseException;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;

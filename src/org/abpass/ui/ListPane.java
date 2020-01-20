@@ -9,7 +9,7 @@ import org.abpass.opvault.Exceptions.ProfileException;
 import org.abpass.opvault.Item.Category;
 import org.abpass.opvault.ItemOverview;
 import org.abpass.opvault.Profile;
-import org.json.simple.parser.ParseException;
+import org.json.zero.ParseException;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;

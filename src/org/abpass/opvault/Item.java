@@ -1,5 +1,8 @@
 package org.abpass.opvault;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Arrays;
@@ -9,10 +12,10 @@ import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.abpass.json.JsonParser;
-import org.abpass.json.JsonTypedHandler;
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
-import org.json.simple.parser.ParseException;
+import org.json.zero.ParseException;
+import org.json.zero.hl.JsonParser;
+import org.json.zero.hl.JsonTypedHandler;
 
 public class Item {
     public enum Category {
@@ -107,8 +110,9 @@ public class Item {
     
     public ItemOverview getOverview(KeyMacPair overviewKeys) throws InvalidOpdataException, GeneralSecurityException, ParseException {
         byte[] overview = overviewKeys.decrypt(o);
+        CharBuffer cb = Charset.defaultCharset().decode(ByteBuffer.wrap(overview));
         try {
-            return JsonParser.parse(overview, ItemOverview.newParser());
+            return JsonParser.parse(cb.array(), ItemOverview.newParser());
         } finally {
             Decrypt.wipe(overview);
         }
@@ -117,8 +121,9 @@ public class Item {
     public ItemDetail getDetail() throws InvalidOpdataException, GeneralSecurityException, ParseException {
         try (var keys = itemKeys()) {
             byte[] detail = keys.decrypt(d);
+            CharBuffer cb = Charset.defaultCharset().decode(ByteBuffer.wrap(detail));
             try {
-                return JsonParser.parse(detail, ItemDetail.newParser());
+                return JsonParser.parse(cb.array(), ItemDetail.newParser());
             } finally {
                 Decrypt.wipe(detail);
             }

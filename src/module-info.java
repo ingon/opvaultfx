@@ -3,8 +3,8 @@ module abpass {
     requires transitive javafx.graphics;
 
     requires transitive java.sql;
-    requires json.simple;
     requires javafx.base;
+    requires json.zero;
     
     exports org.abpass.opvault;
     exports org.abpass.ui;

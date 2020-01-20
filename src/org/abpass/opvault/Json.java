@@ -1,16 +1,17 @@
 package org.abpass.opvault;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import org.abpass.json.JsonBaseHandler;
-import org.abpass.json.JsonTypedHandler;
-import org.json.simple.parser.ParseException;
+import org.json.zero.ParseException;
+import org.json.zero.hl.JsonBaseHandler;
+import org.json.zero.hl.JsonTypedHandler;
 
 class Json<T> extends JsonTypedHandler<T> {
+    
     public Json(Supplier<T> factory) {
         super(factory);
     }
@@ -28,21 +29,14 @@ class Json<T> extends JsonTypedHandler<T> {
     }
 }
 
-class ItemUrl {
-    static JsonTypedHandler<ItemUrl> newParser() {
-        var handler = new Json<ItemUrl>(ItemUrl::new);
-        handler.urlProperty("u", (t, o) -> t.url = o);
-        return handler;
-    }
-    
-    URL url;
-}
-
 class JsonURLHandler extends JsonBaseHandler<URL> {
     @Override
-    public boolean primitive(Object o) throws ParseException, IOException {
-        var s = (String) o;
-        complete(new URL(s));
-        return super.primitive(o);
+    public boolean stringValue(char[] source, int begin, int end, int escapeCount) throws ParseException {
+        try {
+            complete(new URL(readString(source, begin, end, escapeCount)));
+        } catch (MalformedURLException e) {
+            throw new ParseException(-1, "not an url");
+        }
+        return true;
     }
 }

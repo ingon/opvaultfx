@@ -8,7 +8,7 @@ import org.abpass.opvault.Exceptions.ProfileException;
 import org.abpass.opvault.Profile;
 import org.abpass.opvault.Vault;
 import org.abpass.ui.util.ReloadSceneCssService;
-import org.json.simple.parser.ParseException;
+import org.json.zero.ParseException;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
