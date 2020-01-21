@@ -18,9 +18,8 @@ public class ItemOverview {
 
         handler.numberProperty("ps", (t, o) -> t.ps = o.intValue());
         
-        // TODO
-        handler.valueProperty("pbe", (t, o) -> System.out.println("pbe: " + o));
-        handler.valueProperty("pgrng", (t, o) -> System.out.println("pgrng: " + o));
+        handler.numberProperty("pbe", (t, o) -> t.pbe = o.doubleValue());
+        handler.booleanProperty("pgrng", (t, o) -> t.pgrng = o);
         
         return handler;
     }
@@ -31,6 +30,9 @@ public class ItemOverview {
     private List<ItemOverviewUrl> urls;
     private List<String> tags;
     private Integer ps;
+    
+    private Boolean pgrng;
+    private Double pbe;
 
     ItemOverview() {
     }
