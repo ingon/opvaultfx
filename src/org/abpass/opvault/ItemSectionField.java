@@ -40,17 +40,12 @@ public class ItemSectionField {
         handler.stringProperty("t", (t, o) -> t.title = o);
         handler.objectProperty("a", A.newParser(), (t, o) -> t.a = o);
         
-        handler.valueProperty("v", (t, o) -> {
-            if (o == null) {
-                return;
-            }
-            if (o instanceof String) {
-                t.value = (String) o;
-            } else {
-                System.out.println("unexpected type: " + o.getClass());
-                t.value = o.toString();
-            }
+        handler.sectionFieldProperty("v", (t, o) -> {
+            System.out.println("Kind when value: " + t.kind);
+            t.value = o;
         });
+        
+        handler.valueProperty("inputTraits", (t, o) -> System.out.println("inputTraits: " + o));
         
         return handler;
     }
@@ -58,7 +53,8 @@ public class ItemSectionField {
     private Kind kind;
     private String name;
     private String title;
-    private String value;
+    private Object value;
+    
     private A a;
     
     ItemSectionField() {
@@ -86,6 +82,10 @@ public class ItemSectionField {
             handler.stringProperty("guarded", (t, o) -> t.guarded = "yes".equalsIgnoreCase(o));
             handler.stringProperty("generate", (t, o) -> t.noGenerate = "off".equalsIgnoreCase(o));
             handler.stringProperty("clipboardFilter", (t, o) -> t.clipboardFilder = o);
+            
+            // TODO
+            handler.valueProperty("multiline", (t, o) -> System.out.println("multiline: " + o));
+            
             return handler;
         }
         
@@ -93,4 +93,5 @@ public class ItemSectionField {
         private Boolean noGenerate;
         private String clipboardFilder;
     }
+    
 }

@@ -13,6 +13,7 @@ public class ItemField {
         B("B"),
         I("I"),
         S("S"),
+        EMPTY(""),
         ;
         
         private final String raw;
@@ -59,16 +60,20 @@ public class ItemField {
     
     static Json<ItemField> newParser() {
         var handler = new Json<ItemField>(ItemField::new);
+        
+        handler.stringProperty("id", (t, o) -> t.id = o);
         handler.stringProperty("type", (t, o) -> t.type = Type.of(o));
         handler.stringProperty("name", (t, o) -> t.name = o);
-        handler.stringProperty("value", (t, o) -> t.value = o);
+        handler.secureStringProperty("value", (t, o) -> t.value = o);
         handler.stringProperty("designation", (t, o) -> t.designation = Designation.of(o));
+        
         return handler;
     }
 
+    private String id;
     private Type type;
     private String name;
-    private String value;
+    private SecureString value;
     private Designation designation;
     
     ItemField() {
@@ -82,7 +87,7 @@ public class ItemField {
         return name;
     }
 
-    public String getValue() {
+    public SecureString getValue() {
         return value;
     }
 

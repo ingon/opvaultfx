@@ -27,11 +27,15 @@ public class ItemFieldsPane extends VBox {
                     getChildren().add(new Label(f.getName()));
                     if (f.getDesignation() == Designation.Password || f.getType() == Type.Password) {
                         var pwd = new PasswordField();
-                        pwd.setText(f.getValue());
+                        pwd.setText("use copy to get the value");
                         pwd.setEditable(false);
+                        pwd.setDisable(true);
                         getChildren().add(pwd);
                     } else {
-                        var txt = new TextField(f.getValue());
+                        var txt = new TextField();
+                        f.getValue().access((chs) -> {
+                            txt.setText(new String(chs));
+                        });
                         txt.setEditable(false);
                         getChildren().add(txt);
                     }

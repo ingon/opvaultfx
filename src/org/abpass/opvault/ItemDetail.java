@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.zero.hl.JsonStringHandler;
 import org.json.zero.hl.JsonTypedHandler;
 
 public class ItemDetail {
@@ -14,8 +15,11 @@ public class ItemDetail {
         handler.arrayProperty("fields", ItemField.newParser(), (t, o) -> t.fields = o);
         handler.arrayProperty("sections", ItemSection.newParser(), (t, o) -> t.sections = o);
         
-        handler.objectProperty("htmlForm", HtmlForm.newParser(), (t, o) -> t.htmlForm = o);
+        handler.secureStringProperty("password", (t, o) -> t.password = o);
         handler.arrayProperty("passwordHistory", PasswordHistoryItem.newParser(), (t, o) -> t.passwordHistory = o);
+        handler.arrayProperty("backupKeys", new JsonStringHandler(), (t, o) -> t.backupKeys = o);
+        
+        handler.objectProperty("htmlForm", HtmlForm.newParser(), (t, o) -> t.htmlForm = o);
         
         return handler;
     }
@@ -25,8 +29,11 @@ public class ItemDetail {
     private List<ItemField> fields = new ArrayList<>();
     private List<ItemSection> sections = new ArrayList<>();
     
-    private HtmlForm htmlForm;
+    private SecureString password;
     private List<PasswordHistoryItem> passwordHistory;
+    private List<String> backupKeys;
+    
+    private HtmlForm htmlForm;
 
     ItemDetail() {
     }
@@ -41,6 +48,14 @@ public class ItemDetail {
     
     public List<ItemSection> getSections() {
         return sections;
+    }
+    
+    public SecureString getPassword() {
+        return password;
+    }
+    
+    public List<PasswordHistoryItem> getPasswordHistory() {
+        return passwordHistory;
     }
     
     private static class HtmlForm {
@@ -59,15 +74,15 @@ public class ItemDetail {
         private String action;
     }
     
-    private static class PasswordHistoryItem {
+    public static class PasswordHistoryItem {
         static JsonTypedHandler<PasswordHistoryItem> newParser() {
             Json<PasswordHistoryItem> handler = new Json<PasswordHistoryItem>(PasswordHistoryItem::new);
             handler.instantProperty("time", (t, o) -> t.time = o);
-            handler.stringProperty("value", (t, o) -> t.value = o);
+            handler.secureStringProperty("value", (t, o) -> t.value = o);
             return handler;
         }
         
         private Instant time;
-        private String value;
+        private SecureString value;
     }
 }

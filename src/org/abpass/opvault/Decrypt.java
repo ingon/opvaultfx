@@ -110,6 +110,14 @@ public class Decrypt {
     }
     
     static void wipe(byte[] data) {
-        Arrays.fill(data, (byte) 0);
+        for (int i = 0, n = data.length; i < n; i++) {
+            data[i] = 0;
+        }
+    }
+
+    static void wipe(char[] data) {
+        for (int i = 0, n = data.length; i < n; i++) {
+            data[i] = '\0';
+        }
     }
 }

@@ -42,10 +42,13 @@ public class Profile {
         handler.base64Property("overviewKey", (t, o) -> t.overviewKey = o);
         handler.base64Property("masterKey", (t, o) -> t.masterKey = o);
         
+        // TODO
         handler.stringProperty("lastUpdatedBy", (t, o) -> {});
         handler.stringProperty("profileName", (t, o) -> {});
         handler.instantProperty("createdAt", (t, o) -> {});
         handler.instantProperty("updatedAt", (t, o) -> {});
+        handler.instantProperty("tx", (t, o) -> {});
+        handler.stringProperty("passwordHint", (t, o) -> {});
         
         return handler;
     }
