@@ -2,9 +2,9 @@ package org.abpass.ui;
 
 import org.abpass.opvault.ItemSection;
 import org.abpass.opvault.ItemSectionField.Kind;
+import org.abpass.opvault.SecureString;
 
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
@@ -28,21 +28,21 @@ public class ItemSectionPane extends VBox {
                     continue;
                 }
                 
-                String v = f.getValue().toString();
                 var titleLbl = new Label(f.getTitle());
                 titleLbl.getStyleClass().add("item-section-field-header");
                 getChildren().add(titleLbl);
+                
                 if (f.getKind() == Kind.Concealed) {
-                    var pwd = new PasswordField();
-                    pwd.setText(v);
-                    pwd.setEditable(false);
-                    getChildren().add(pwd);
+                    getChildren().add(new PasswordPane((SecureString) f.getValue()));
                 } else {
-                    var txt = new TextField(v);
+                    var txt = new TextField();
+                    txt.setText(f.getValue().toString());
                     txt.setEditable(false);
                     getChildren().add(txt);
                 }
             }
         }
     }
+    
+    
 }

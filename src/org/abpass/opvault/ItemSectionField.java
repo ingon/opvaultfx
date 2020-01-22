@@ -35,19 +35,49 @@ public class ItemSectionField {
     
     static Json<ItemSectionField> newParser() {
         var handler = new Json<ItemSectionField>(ItemSectionField::new);
-        handler.stringProperty("k", (t, o) -> t.kind = Kind.of(o));
+        handler.stringProperty("k", (t, o) -> {
+            t.kind = Kind.of(o);
+            addHandlerByKind(handler, t.kind);
+        });
         handler.stringProperty("n", (t, o) -> t.name = o);
         handler.stringProperty("t", (t, o) -> t.title = o);
         handler.objectProperty("a", A.newParser(), (t, o) -> t.a = o);
         
-        handler.sectionFieldProperty("v", (t, o) -> {
-            System.out.println("Kind when value: " + t.kind);
-            t.value = o;
-        });
-        
         handler.valueProperty("inputTraits", (t, o) -> System.out.println("inputTraits: " + o));
         
         return handler;
+    }
+    
+    private static void addHandlerByKind(Json<ItemSectionField> handler, Kind kind) {
+        switch (kind) {
+        case Concealed: 
+            handler.secureStringProperty("v", ItemSectionField::setValue);
+            break;
+        case String:
+        case Email:
+        case URL:
+        case Phone:
+        case Menu:
+        case CC_Type:
+            handler.stringProperty("v", ItemSectionField::setValue);
+            break;
+        case Date:
+            handler.instantProperty("v", ItemSectionField::setValue);
+            break;
+        case Address:
+            handler.objectProperty("v", Address.newParser(), ItemSectionField::setValue);
+            break;
+        case MonthYear:
+            handler.monthYearProperty("v", ItemSectionField::setValue);
+            break;
+        default:
+            System.out.println("k : " + kind);
+            handler.stringProperty("v", (t, o) -> {
+                t.value = o;
+                System.out.println("v: " + o);
+            });
+            break;
+        }
     }
     
     private Kind kind;
@@ -76,6 +106,10 @@ public class ItemSectionField {
         return value;
     }
     
+    private void setValue(Object value) {
+        this.value = value;
+    }
+    
     static class A {
         static JsonTypedHandler<A> newParser() {
             Json<A> handler = new Json<A>(A::new);
@@ -94,4 +128,43 @@ public class ItemSectionField {
         private String clipboardFilder;
     }
     
+    static class Address {
+        static JsonTypedHandler<Address> newParser() {
+            var handler = new Json<Address>(Address::new);
+            
+            handler.stringProperty("street", Address::setStreet);
+            handler.stringProperty("city", Address::setCity);
+            handler.stringProperty("zip", Address::setZip);
+            handler.stringProperty("state", Address::setState);
+            handler.stringProperty("country", Address::setCountry);
+            
+            return handler;
+        }
+        
+        private String street;
+        private String city;
+        private String zip;
+        private String state;
+        private String country;
+        
+        private void setStreet(String street) {
+            this.street = street;
+        }
+
+        private void setCity(String city) {
+            this.city = city;
+        }
+
+        private void setZip(String zip) {
+            this.zip = zip;
+        }
+
+        private void setState(String state) {
+            this.state = state;
+        }
+
+        private void setCountry(String country) {
+            this.country = country;
+        }
+    }
 }

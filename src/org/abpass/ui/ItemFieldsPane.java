@@ -1,6 +1,7 @@
 package org.abpass.ui;
 
 import org.abpass.opvault.ItemField;
+import org.abpass.opvault.SecureString;
 import org.abpass.opvault.ItemField.Designation;
 import org.abpass.opvault.ItemField.Type;
 
@@ -26,11 +27,7 @@ public class ItemFieldsPane extends VBox {
                 for (var f : newValue) {
                     getChildren().add(new Label(f.getName()));
                     if (f.getDesignation() == Designation.Password || f.getType() == Type.Password) {
-                        var pwd = new PasswordField();
-                        pwd.setText("use copy to get the value");
-                        pwd.setEditable(false);
-                        pwd.setDisable(true);
-                        getChildren().add(pwd);
+                        getChildren().add(new PasswordPane((SecureString) f.getValue()));
                     } else {
                         var txt = new TextField();
                         f.getValue().access((chs) -> {
