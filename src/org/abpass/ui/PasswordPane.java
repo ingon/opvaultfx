@@ -4,6 +4,8 @@ import org.abpass.opvault.SecureString;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.BorderPane;
 
 public class PasswordPane extends BorderPane {
@@ -15,7 +17,14 @@ public class PasswordPane extends BorderPane {
         setCenter(pwd);
 
         var btn = new Button("Copy");
-        btn.setOnAction((e) -> {});
+        btn.setOnAction((e) -> {
+            var clipboard = Clipboard.getSystemClipboard();
+            var content = new ClipboardContent();
+            data.access((chars) -> {
+                content.putString(new String(chars));
+                clipboard.setContent(content);
+            });
+        });
         setRight(btn);
     }
 }
