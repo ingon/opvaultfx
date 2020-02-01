@@ -67,7 +67,7 @@ class JsonURLHandler extends JsonBaseHandler<URL> {
 class JsonBase64Handler extends JsonBaseHandler<byte[]> {
     @Override
     public boolean stringValue(char[] source, int begin, int end, int escapeCount) throws ParseException {
-        complete(Decrypt.decode(readString(source, begin, end, escapeCount)));
+        complete(Security.decode(readString(source, begin, end, escapeCount)));
         return true;
     }
 }

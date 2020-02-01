@@ -58,7 +58,15 @@ public class ItemDetail {
         return passwordHistory;
     }
     
-    private static class HtmlForm {
+    public List<String> getBackupKeys() {
+        return backupKeys;
+    }
+    
+    public HtmlForm getHtmlForm() {
+        return htmlForm;
+    }
+    
+    public static class HtmlForm {
         static JsonTypedHandler<HtmlForm> newParser() {
             Json<HtmlForm> handler = new Json<HtmlForm>(HtmlForm::new);
             handler.stringProperty("htmlID", (t, o) -> t.id = o);
@@ -72,6 +80,22 @@ public class ItemDetail {
         private String name;
         private String method;
         private String action;
+        
+        public String getId() {
+            return id;
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        public String getMethod() {
+            return method;
+        }
+        
+        public String getAction() {
+            return action;
+        }
     }
     
     public static class PasswordHistoryItem {
@@ -84,5 +108,13 @@ public class ItemDetail {
         
         private Instant time;
         private SecureString value;
+        
+        public Instant getTime() {
+            return time;
+        }
+        
+        public SecureString getValue() {
+            return value;
+        }
     }
 }

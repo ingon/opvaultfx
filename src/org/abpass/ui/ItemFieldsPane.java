@@ -30,7 +30,7 @@ public class ItemFieldsPane extends VBox {
                         getChildren().add(new PasswordPane((SecureString) f.getValue()));
                     } else {
                         var txt = new TextField();
-                        f.getValue().access((chs) -> {
+                        f.getValue().accept((chs) -> {
                             txt.setText(new String(chs));
                         });
                         txt.setEditable(false);

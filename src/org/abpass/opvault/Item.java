@@ -1,16 +1,7 @@
 package org.abpass.opvault;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
-import java.util.Arrays;
-
-import javax.crypto.Cipher;
-import javax.crypto.Mac;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
 import org.json.zero.ParseException;
@@ -89,7 +80,7 @@ public class Item {
     private Instant updated;
     private Instant tx;
     
-    private byte[] hmac;
+    private byte[] hmac; // TODO verify item hmac!!!
     private byte[] o;
     private byte[] k;
     private byte[] d;
@@ -98,8 +89,36 @@ public class Item {
         this.profile = profile;
     }
     
+    public String getUuid() {
+        return uuid;
+    }
+    
     public Category getCategory() {
         return category;
+    }
+    
+    public Long getFave() {
+        return fave;
+    }
+    
+    public String getFolder() {
+        return folder;
+    }
+    
+    public boolean isTrashed() {
+        return trashed;
+    }
+    
+    public Instant getCreated() {
+        return created;
+    }
+    
+    public Instant getUpdated() {
+        return updated;
+    }
+    
+    public Instant getTx() {
+        return tx;
     }
     
     public ItemOverview getOverview() throws GeneralSecurityException, InvalidOpdataException, ParseException {
@@ -109,49 +128,24 @@ public class Item {
     }
     
     public ItemOverview getOverview(KeyMacPair overviewKeys) throws InvalidOpdataException, GeneralSecurityException, ParseException {
-        byte[] overview = overviewKeys.decrypt(o);
-        CharBuffer cb = Charset.defaultCharset().decode(ByteBuffer.wrap(overview));
+        char[] overview = overviewKeys.decryptData(o);
         try {
-            return JsonParser.parse(cb.array(), ItemOverview.newParser());
+            return JsonParser.parse(overview, ItemOverview.newParser());
         } finally {
-            Decrypt.wipe(overview);
+            Security.wipe(overview);
         }
     }
         
     public ItemDetail getDetail() throws InvalidOpdataException, GeneralSecurityException, ParseException {
-        try (var keys = itemKeys()) {
-            byte[] detail = keys.decrypt(d);
-            CharBuffer cb = Charset.defaultCharset().decode(ByteBuffer.wrap(detail));
+        try (var master = profile.masterKeys(); 
+                var item = master.decryptKeys(k)) {
+            
+            char[] detail = item.decryptData(d);
             try {
-                return JsonParser.parse(cb.array(), ItemDetail.newParser());
+                return JsonParser.parse(detail, ItemDetail.newParser());
             } finally {
-                Decrypt.wipe(detail);
+                Security.wipe(detail);
             }
         }
-    }
-    
-    private KeyMacPair itemKeys() throws InvalidOpdataException, GeneralSecurityException {
-        var master = profile.masterKeys();
-        
-        var data = Arrays.copyOfRange(k, 0, k.length - 32);
-        var mac = Arrays.copyOfRange(k, k.length - 32, k.length);
-        
-        // check data against its mac
-        var mm = Mac.getInstance("HmacSHA256");
-        mm.init(new SecretKeySpec(master.mac, "SHA256"));
-        var calcMac = mm.doFinal(data);
-        if (! Arrays.equals(mac, calcMac)) {
-            throw new RuntimeException("invalid keys");
-        }
-        
-        // extract the keys
-        SecretKeySpec spec = new SecretKeySpec(master.key, "AES");
-        IvParameterSpec ivSpec = new IvParameterSpec(Arrays.copyOfRange(data, 0, 16));
-        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-        cipher.init(Cipher.DECRYPT_MODE, spec, ivSpec);
-        var keys = cipher.doFinal(Arrays.copyOfRange(data, 16, data.length));
-        
-        return new KeyMacPair(Arrays.copyOfRange(keys, keys.length - 64, keys.length - 32), 
-            Arrays.copyOfRange(keys, keys.length - 32, keys.length));
     }
 }

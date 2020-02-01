@@ -20,7 +20,7 @@ public class PasswordPane extends BorderPane {
         btn.setOnAction((e) -> {
             var clipboard = Clipboard.getSystemClipboard();
             var content = new ClipboardContent();
-            data.access((chars) -> {
+            data.accept((chars) -> {
                 content.putString(new String(chars));
                 clipboard.setContent(content);
             });

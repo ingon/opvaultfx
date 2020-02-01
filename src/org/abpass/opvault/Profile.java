@@ -4,14 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import javax.crypto.spec.PBEKeySpec;
 
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
 import org.abpass.opvault.Exceptions.InvalidPasswordException;
@@ -88,7 +83,6 @@ public class Profile {
             }
             
             var profileJson = profileData.substring(PROFILE_PREAMBLE.length(), profileData.length() - PROFILE_EPILOGUE.length());
-            
             JsonParser.parse(profileJson.toCharArray(), newParser(this));
         } catch(IOException exc) {
             throw new ProfileReadException(profilePath, exc);
@@ -101,36 +95,14 @@ public class Profile {
         return uuid;
     }
     
-    public void unlock(String password) throws InvalidPasswordException {
-        var d = deriveKey(password);
+    public void unlock(SecureString password) throws InvalidPasswordException {
+        var d = KeyMacPair.derive(password, salt, iterations);
         
-        try {
-            var master = d.decrypt(masterKey);
-            Decrypt.wipe(master);
-            
+        try (var master = d.decryptOpdataKeys(masterKey)) {
             this.derived = d;
         } catch(InvalidOpdataException exc) {
+            d.close();
             throw new InvalidPasswordException(exc, path);
-        }
-    }
-    
-    private KeyMacPair deriveKey(String password) throws InvalidPasswordException {
-        var keyFactory = Decrypt.getPBKDF2WithHmacSHA512();
-        var keySpec = new PBEKeySpec(password.toCharArray(), salt, iterations, 64 * 8);
-        
-        try {
-            var key = keyFactory.generateSecret(keySpec);
-            
-            byte[] keyData = key.getEncoded();
-            try {
-                return new KeyMacPair(Arrays.copyOfRange(keyData, 0, 32), Arrays.copyOfRange(keyData, 32, keyData.length));
-            } finally {
-                Decrypt.wipe(keyData);
-            }
-        } catch (InvalidKeySpecException e) {
-            throw new InvalidPasswordException(e, path);
-        } finally {
-            keySpec.clearPassword();
         }
     }
     
@@ -144,15 +116,7 @@ public class Profile {
             throw new IllegalStateException("profile locked");
         }
         
-        var decryptedOverviewKey = derived.decrypt(overviewKey);
-        
-        var md = MessageDigest.getInstance("SHA-512");
-        var keys = md.digest(decryptedOverviewKey);
-        try {
-            return new KeyMacPair(Arrays.copyOfRange(keys, 0, 32), Arrays.copyOfRange(keys, 32, keys.length));
-        } finally {
-            Decrypt.wipe(keys);
-        }
+        return derived.decryptOpdataKeys(overviewKey);
     }
 
     KeyMacPair masterKeys() throws InvalidOpdataException, GeneralSecurityException {
@@ -160,15 +124,7 @@ public class Profile {
             throw new IllegalStateException("profile locked");
         }
         
-        var decryptedOverviewKey = derived.decrypt(masterKey);
-        
-        var md = MessageDigest.getInstance("SHA-512");
-        var keys = md.digest(decryptedOverviewKey);
-        try {
-            return new KeyMacPair(Arrays.copyOfRange(keys, 0, 32), Arrays.copyOfRange(keys, 32, keys.length));
-        } finally {
-            Decrypt.wipe(keys);
-        }
+        return derived.decryptOpdataKeys(masterKey);
     }
 
     public List<Item> getItems() throws ProfileException {
@@ -176,7 +132,6 @@ public class Profile {
             var allItems = new ArrayList<Item>();
             for (var band : ds) {
                 var items = getItemsInBand(band);
-                System.out.println("items: " + items);
                 allItems.addAll(items.values());
             }
             return allItems;

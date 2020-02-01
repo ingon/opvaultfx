@@ -2,6 +2,7 @@ package org.abpass.ui;
 
 import org.abpass.opvault.Exceptions.InvalidPasswordException;
 import org.abpass.opvault.Profile;
+import org.abpass.opvault.SecureString;
 import org.abpass.opvault.Vault;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -52,7 +53,8 @@ public class LockedPane extends BorderPane {
     
     private void act(ActionEvent ev) {
         try {
-            profile.unlock(passwordFld.getText());
+            // TODO this should not be made in one go, but gradually as typing
+            profile.unlock(new SecureString(passwordFld.getText().toCharArray()));
             unlocked.setValue(true);
         } catch (InvalidPasswordException e) {
             errorLbl.setText(e.getMessage());

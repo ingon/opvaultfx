@@ -78,6 +78,10 @@ public class ItemField {
     
     ItemField() {
     }
+    
+    public String getId() {
+        return id;
+    }
 
     public Type getType() {
         return type;
@@ -93,11 +97,5 @@ public class ItemField {
 
     public Designation getDesignation() {
         return designation;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("field [ type=%s, name=%s, value=%s, designation=%s ]", 
-            getType(), getName(), getValue(), getDesignation());
     }
 }

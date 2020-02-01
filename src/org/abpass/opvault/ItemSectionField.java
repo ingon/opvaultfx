@@ -106,11 +106,15 @@ public class ItemSectionField {
         return value;
     }
     
+    public A getA() {
+        return a;
+    }
+    
     private void setValue(Object value) {
         this.value = value;
     }
     
-    static class A {
+    public static class A {
         static JsonTypedHandler<A> newParser() {
             Json<A> handler = new Json<A>(A::new);
             handler.stringProperty("guarded", (t, o) -> t.guarded = "yes".equalsIgnoreCase(o));
@@ -126,6 +130,16 @@ public class ItemSectionField {
         private Boolean guarded;
         private Boolean noGenerate;
         private String clipboardFilder;
+        
+        public Boolean getGuarded() {
+            return guarded;
+        }
+        public Boolean getNoGenerate() {
+            return noGenerate;
+        }
+        public String getClipboardFilder() {
+            return clipboardFilder;
+        }
     }
     
     static class Address {
@@ -146,6 +160,26 @@ public class ItemSectionField {
         private String zip;
         private String state;
         private String country;
+        
+        public String getStreet() {
+            return street;
+        }
+        
+        public String getCity() {
+            return city;
+        }
+        
+        public String getZip() {
+            return zip;
+        }
+        
+        public String getState() {
+            return state;
+        }
+        
+        public String getCountry() {
+            return country;
+        }
         
         private void setStreet(String street) {
             this.street = street;

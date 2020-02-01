@@ -45,13 +45,31 @@ public class ItemOverview {
         return ainfo;
     }
     
-    @Override
-    public String toString() {
-        return String.format("overview [ title=%s, ainfo=%s, url=%s, urls=%s, tags=%s, ps=%s]",
-            title, ainfo, url, urls, tags, ps);
+    public String getUrl() {
+        return url;
     }
-
-    static class ItemOverviewUrl {
+    
+    public List<ItemOverviewUrl> getUrls() {
+        return urls;
+    }
+    
+    public List<String> getTags() {
+        return tags;
+    }
+    
+    public Integer getPs() {
+        return ps;
+    }
+    
+    public Boolean getPgrng() {
+        return pgrng;
+    }
+    
+    public Double getPbe() {
+        return pbe;
+    }
+    
+    public static class ItemOverviewUrl {
         static JsonTypedHandler<ItemOverviewUrl> newParser() {
             var handler = new Json<ItemOverviewUrl>(ItemOverviewUrl::new);
             
@@ -61,8 +79,16 @@ public class ItemOverview {
             return handler;
         }
         
-        String u;
-        String l;
+        private String u;
+        private String l;
+        
+        public String getU() {
+            return u;
+        }
+        
+        public String getL() {
+            return l;
+        }
     }
 }
 
