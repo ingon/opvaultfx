@@ -128,7 +128,7 @@ public class Item {
     }
     
     public ItemOverview getOverview(KeyMacPair overviewKeys) throws InvalidOpdataException, GeneralSecurityException, ParseException {
-        char[] overview = overviewKeys.decryptData(o);
+        char[] overview = overviewKeys.decryptOpdata(o);
         try {
             return JsonParser.parse(overview, ItemOverview.newParser());
         } finally {
@@ -140,7 +140,7 @@ public class Item {
         try (var master = profile.masterKeys(); 
                 var item = master.decryptKeys(k)) {
             
-            char[] detail = item.decryptData(d);
+            char[] detail = item.decryptOpdata(d);
             try {
                 return JsonParser.parse(detail, ItemDetail.newParser());
             } finally {

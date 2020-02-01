@@ -23,7 +23,7 @@ public class KeyMacPair implements AutoCloseable {
     private final byte[] key;
     private final byte[] mac;
     
-    public KeyMacPair(byte[] combined, int keyFrom, int keyTo, int macFrom, int macTo) {
+    private KeyMacPair(byte[] combined, int keyFrom, int keyTo, int macFrom, int macTo) {
         this.key = Arrays.copyOfRange(combined, keyFrom, keyTo);
         this.mac = Arrays.copyOfRange(combined, macFrom, macTo);
         
@@ -81,7 +81,7 @@ public class KeyMacPair implements AutoCloseable {
         }
     }
     
-    public char[] decryptData(byte[] encData) throws InvalidOpdataException {
+    public char[] decryptOpdata(byte[] encData) throws InvalidOpdataException {
         byte[] decData = opdata(encData);
         try {
             // the following sequence is zero copy
