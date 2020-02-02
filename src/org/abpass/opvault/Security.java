@@ -34,6 +34,14 @@ public class Security {
         }
     }
     
+    static Cipher getAESPadding() {
+        try {
+            return Cipher.getInstance("AES");
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new Error("cannot make AES", e);
+        }
+    }
+    
     static MessageDigest getSHA256() {
         try {
             return MessageDigest.getInstance("SHA-512");
@@ -52,7 +60,7 @@ public class Security {
         }
     }
 
-    static void wipe(char[] data) {
+    public static void wipe(char[] data) {
         for (int i = 0, n = data.length; i < n; i++) {
             data[i] = '\0';
         }

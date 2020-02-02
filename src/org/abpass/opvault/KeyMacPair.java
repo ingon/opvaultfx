@@ -1,5 +1,7 @@
 package org.abpass.opvault;
 
+import java.lang.ref.Cleaner;
+import java.lang.ref.Cleaner.Cleanable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
@@ -20,15 +22,22 @@ import javax.crypto.spec.SecretKeySpec;
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
 
 public class KeyMacPair implements AutoCloseable {
+    private static final Cleaner cleaner = Cleaner.create();
+    
+    private final Cleanable cleanable;
     private final byte[] key;
     private final byte[] mac;
     
     private KeyMacPair(byte[] combined, int keyFrom, int keyTo, int macFrom, int macTo) {
-        this.key = Arrays.copyOfRange(combined, keyFrom, keyTo);
-        this.mac = Arrays.copyOfRange(combined, macFrom, macTo);
+        byte[] key = Arrays.copyOfRange(combined, keyFrom, keyTo);
+        byte[] mac = Arrays.copyOfRange(combined, macFrom, macTo);
         
-        // TODO
-//        Cleaner.create().register(this, () -> this.close());
+        this.cleanable = cleaner.register(this, () -> {
+            Security.wipe(key);
+            Security.wipe(mac);
+        });
+        this.key = key;
+        this.mac = mac;
     }
     
     public static KeyMacPair derive(SecureString password, byte[] salt, int iterations) {
@@ -161,13 +170,6 @@ public class KeyMacPair implements AutoCloseable {
 
     @Override
     public void close() {
-        Security.wipe(key);
-        Security.wipe(mac);
-    }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        close();
-        super.finalize();
+        cleanable.clean();
     }
 }
