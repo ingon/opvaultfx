@@ -1,5 +1,8 @@
 package org.abpass.opvault;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -47,6 +50,54 @@ public class Security {
             return MessageDigest.getInstance("SHA-512");
         } catch (NoSuchAlgorithmException e) {
             throw new Error("cannot make SHA256 md", e);
+        }
+    }
+    
+    static byte[] encode(char[] src) {
+        CharBuffer cb = CharBuffer.wrap(src);
+        ByteBuffer bb = Charset.defaultCharset().encode(cb);
+        byte[] bbarr = bb.array();
+        if (bbarr.length == bb.remaining()) {
+            return bbarr;
+        }
+        try {
+            byte[] result = new byte[bb.remaining()];
+            bb.get(result);
+            return result;
+        } finally {
+            wipe(bbarr);
+        }
+    }
+
+    static byte[] encode(char[] src, int offset, int len) {
+        CharBuffer cb = CharBuffer.wrap(src, offset, len);
+        ByteBuffer bb = Charset.defaultCharset().encode(cb);
+        byte[] bbarr = bb.array();
+        if (bbarr.length == bb.remaining()) {
+            return bbarr;
+        }
+        try {
+            byte[] result = new byte[bb.remaining()];
+            bb.get(result);
+            return result;
+        } finally {
+            wipe(bbarr);
+        }
+    }
+
+    static char[] decode(byte[] src) {
+        ByteBuffer bb = ByteBuffer.wrap(src);
+        CharBuffer cb = Charset.defaultCharset().decode(bb);
+        char[] cbarr = cb.array();
+        if (cbarr.length == cb.remaining()) {
+            return cbarr;
+        }
+        try {
+            char[] result = new char[cb.remaining()];
+            cb.get(result);
+            return result;
+        } finally {
+            wipe(cbarr);
         }
     }
     

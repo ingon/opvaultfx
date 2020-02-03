@@ -2,9 +2,6 @@ package org.abpass.opvault;
 
 import java.lang.ref.Cleaner;
 import java.lang.ref.Cleaner.Cleanable;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.function.Consumer;
@@ -27,17 +24,16 @@ public final class SecureString implements AutoCloseable {
     public SecureString(char[] source) {
         SecretKey key = generateKey();
         
-        byte[] primData = Charset.defaultCharset().encode(CharBuffer.wrap(source)).array();
         byte[] data;
-        
+        byte[] sourceData = Security.encode(source);
         try {
             Cipher cipher = Security.getAESPadding();
             cipher.init(Cipher.ENCRYPT_MODE, key);
-            data = cipher.doFinal(primData);
+            data = cipher.doFinal(sourceData);
         } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             throw new RuntimeException("cannot encrypt", e);
         } finally {
-            Security.wipe(primData);
+            Security.wipe(sourceData);
         }
         
         this.cleanable = cleaner.register(this, () -> Security.wipe(data));
@@ -49,17 +45,16 @@ public final class SecureString implements AutoCloseable {
     public SecureString(char[] source, int start, int len) {
         SecretKey key = generateKey();
 
-        byte[] primData = Charset.defaultCharset().encode(CharBuffer.wrap(source, start, len)).array();
         byte[] data;
-        
+        byte[] sourceData = Security.encode(source, start, len);
         try {
             Cipher cipher = Security.getAESPadding();
             cipher.init(Cipher.ENCRYPT_MODE, key);
-            data = cipher.doFinal(primData);
+            data = cipher.doFinal(sourceData);
         } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             throw new RuntimeException("cannot encrypt", e);
         } finally {
-            Security.wipe(primData);
+            Security.wipe(sourceData);
         }
         
         this.cleanable = cleaner.register(this, () -> Security.wipe(data));
@@ -84,7 +79,7 @@ public final class SecureString implements AutoCloseable {
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] plainData = cipher.doFinal(data);
             
-            char[] chars = Charset.defaultCharset().decode(ByteBuffer.wrap(plainData)).array();
+            char[] chars = Security.decode(plainData);
             Security.wipe(plainData);
             
             char[] newChars = new char[chars.length + added.length];
@@ -107,7 +102,8 @@ public final class SecureString implements AutoCloseable {
             Cipher cipher = Security.getAESPadding();
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] plainData = cipher.doFinal(data);
-            char[] chars = Charset.defaultCharset().decode(ByteBuffer.wrap(plainData)).array();
+            
+            char[] chars = Security.decode(plainData);
             Security.wipe(plainData);
             
             int newSize = chars.length - count;
@@ -139,7 +135,7 @@ public final class SecureString implements AutoCloseable {
             throw new RuntimeException("cannot decrypt", e);
         }
         
-        char[] copy = Charset.defaultCharset().decode(ByteBuffer.wrap(plainData)).array();
+        char[] copy = Security.decode(plainData);
         Security.wipe(plainData);
         
         try {
@@ -159,7 +155,7 @@ public final class SecureString implements AutoCloseable {
             throw new RuntimeException("cannot decrypt", e);
         }
         
-        char[] copy = Charset.defaultCharset().decode(ByteBuffer.wrap(plainData)).array();
+        char[] copy = Security.decode(plainData);
         Security.wipe(plainData);
         
         try {

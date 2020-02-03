@@ -4,7 +4,6 @@ import java.lang.ref.Cleaner;
 import java.lang.ref.Cleaner.Cleanable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -93,10 +92,7 @@ public final class KeyMacPair implements AutoCloseable {
     public char[] decryptOpdata(byte[] encData) throws InvalidOpdataException {
         byte[] decData = opdata(encData);
         try {
-            // the following sequence is zero copy
-            var bytes = ByteBuffer.wrap(decData);
-            var chars = Charset.defaultCharset().decode(bytes);
-            return chars.array();
+            return Security.decode(decData);
         } finally {
             Security.wipe(decData);
         }
