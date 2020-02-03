@@ -15,13 +15,15 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.abpass.opvault.Exceptions.InvalidOpdataException;
 
-public class KeyMacPair implements AutoCloseable {
+// TODO: should we encrypt these like SecureString
+public final class KeyMacPair implements AutoCloseable {
     private static final Cleaner cleaner = Cleaner.create();
     
     private final Cleanable cleanable;
@@ -43,15 +45,13 @@ public class KeyMacPair implements AutoCloseable {
     public static KeyMacPair derive(SecureString password, byte[] salt, int iterations) {
         var keyFactory = Security.getPBKDF2WithHmacSHA512();
         PBEKeySpec keySpec = password.apply((chs) -> new PBEKeySpec(chs, salt, iterations, 64 * 8));
-        
         try {
-            var key = keyFactory.generateSecret(keySpec);
+            SecretKey key = keyFactory.generateSecret(keySpec);
             byte[] keyData = key.getEncoded();
             try {
                 return new KeyMacPair(keyData, 0, 32, 32, keyData.length);
             } finally {
                 Security.wipe(keyData);
-                key = null;
             }
         } catch (InvalidKeySpecException e) {
             throw new RuntimeException("unexpected exc", e);
@@ -64,8 +64,8 @@ public class KeyMacPair implements AutoCloseable {
         verifyMac(encData, mac);
         
         // extract the keys
-        IvParameterSpec ivSpec = new IvParameterSpec(encData, 0, 16);
         Cipher cipher = Security.getAESNoPadding();
+        IvParameterSpec ivSpec = new IvParameterSpec(encData, 0, 16);
         cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), ivSpec);
         byte[] keys = cipher.doFinal(encData, 16, encData.length - 32 - 16);
         try {
@@ -126,7 +126,6 @@ public class KeyMacPair implements AutoCloseable {
         }
     }
 
-    
     private byte[] opdata(byte[] text) throws InvalidOpdataException {
         if (text.length < MIN_LENGTH) {
             throw new InvalidOpdataException("unexpected length");
@@ -138,25 +137,25 @@ public class KeyMacPair implements AutoCloseable {
             throw new InvalidOpdataException("invalid header");
         }
         
-        var data = Arrays.copyOfRange(text, 0, text.length - MAC_SIZE);
-        
-        var bb = ByteBuffer.wrap(data, HEADER_SIZE, PLAIN_TEXT_LENGTH_SIZE);
+        var bb = ByteBuffer.wrap(text, HEADER_SIZE, PLAIN_TEXT_LENGTH_SIZE);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         long plaintextLen = bb.getLong();
         
-        var iv = Arrays.copyOfRange(data, HEADER_SIZE + PLAIN_TEXT_LENGTH_SIZE, HEADER_SIZE + PLAIN_TEXT_LENGTH_SIZE + IV_SIZE);
-        var paddedData = Arrays.copyOfRange(data, HEADER_SIZE + PLAIN_TEXT_LENGTH_SIZE + IV_SIZE, data.length);
-        if (paddedData.length < plaintextLen) {
+        int paddedLen = text.length - HEADER_SIZE - PLAIN_TEXT_LENGTH_SIZE - IV_SIZE - MAC_SIZE;
+        if (paddedLen < plaintextLen) {
             throw new InvalidOpdataException("invalid padded data");
         }
         
-        SecretKeySpec spec = new SecretKeySpec(key, "AES");
-        IvParameterSpec ivSpec = new IvParameterSpec(iv);
         Cipher cipher = Security.getAESNoPadding();
+        IvParameterSpec ivSpec = new IvParameterSpec(text, HEADER_SIZE + PLAIN_TEXT_LENGTH_SIZE, IV_SIZE);
         try {
-            cipher.init(Cipher.DECRYPT_MODE, spec, ivSpec);
-            var decryptData = cipher.doFinal(paddedData);
-            return Arrays.copyOfRange(decryptData, (int) (decryptData.length - plaintextLen), decryptData.length);
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), ivSpec);
+            byte[] decryptData = cipher.doFinal(text, HEADER_SIZE + PLAIN_TEXT_LENGTH_SIZE + IV_SIZE, paddedLen);
+            try {
+                return Arrays.copyOfRange(decryptData, (int) (decryptData.length - plaintextLen), decryptData.length);
+            } finally {
+                Security.wipe(decryptData);
+            }
         } catch (InvalidKeyException e) {
             throw new InvalidOpdataException(e, "invalid key");
         } catch (InvalidAlgorithmParameterException e) {

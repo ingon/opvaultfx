@@ -24,10 +24,6 @@ public final class SecureString implements AutoCloseable {
     private final SecretKey key;
     private final byte[] data;
     
-    public SecureString() {
-        this(new char[0]);
-    }
-    
     public SecureString(char[] source) {
         SecretKey key = generateKey();
         
@@ -87,17 +83,19 @@ public final class SecureString implements AutoCloseable {
             Cipher cipher = Security.getAESPadding();
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] plainData = cipher.doFinal(data);
+            
             char[] chars = Charset.defaultCharset().decode(ByteBuffer.wrap(plainData)).array();
+            Security.wipe(plainData);
             
             char[] newChars = new char[chars.length + added.length];
             System.arraycopy(chars, 0, newChars, 0, chars.length);
+            Security.wipe(chars);
+            
             System.arraycopy(added, 0, newChars, chars.length, added.length);
             try {
                 return new SecureString(newChars);
             } finally {
                 Security.wipe(newChars);
-                Security.wipe(chars);
-                Security.wipe(plainData);
             }
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException("cannot decrypt", e);
@@ -110,6 +108,7 @@ public final class SecureString implements AutoCloseable {
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] plainData = cipher.doFinal(data);
             char[] chars = Charset.defaultCharset().decode(ByteBuffer.wrap(plainData)).array();
+            Security.wipe(plainData);
             
             int newSize = chars.length - count;
             if (newSize <= 0) {
@@ -118,12 +117,12 @@ public final class SecureString implements AutoCloseable {
             
             char[] newChars = new char[newSize];
             System.arraycopy(chars, 0, newChars, 0, newSize);
+            Security.wipe(chars);
+            
             try {
                 return new SecureString(newChars);
             } finally {
                 Security.wipe(newChars);
-                Security.wipe(chars);
-                Security.wipe(plainData);
             }
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException("cannot decrypt", e);
@@ -141,11 +140,12 @@ public final class SecureString implements AutoCloseable {
         }
         
         char[] copy = Charset.defaultCharset().decode(ByteBuffer.wrap(plainData)).array();
+        Security.wipe(plainData);
+        
         try {
             consumer.accept(copy);
         } finally {
             Security.wipe(copy);
-            Security.wipe(plainData);
         }
     }
     
@@ -160,12 +160,12 @@ public final class SecureString implements AutoCloseable {
         }
         
         char[] copy = Charset.defaultCharset().decode(ByteBuffer.wrap(plainData)).array();
+        Security.wipe(plainData);
         
         try {
             return fn.apply(copy);
         } finally {
             Security.wipe(copy);
-            Security.wipe(plainData);
         }
     }
 
