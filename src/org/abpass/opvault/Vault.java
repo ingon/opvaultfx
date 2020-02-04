@@ -7,20 +7,23 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.abpass.opvault.Exceptions.ProfileException;
-import org.abpass.opvault.Exceptions.VaultException;
-import org.abpass.opvault.Exceptions.VaultNotDirectoryException;
-import org.abpass.opvault.Exceptions.VaultNotFoundException;
+import org.abpass.opvault.ProfileException.ProfileFormatException;
+import org.abpass.opvault.ProfileException.ProfileNotFileException;
+import org.abpass.opvault.ProfileException.ProfileNotFoundException;
+import org.abpass.opvault.ProfileException.ProfileReadException;
+import org.abpass.opvault.VaultException.VaultNotDirectoryException;
+import org.abpass.opvault.VaultException.VaultNotFoundException;
+import org.abpass.opvault.VaultException.VaultProfilesException;
 
 public class Vault {
     public final Path path;
     
-    public static Vault dropbox() throws VaultException {
+    public static Vault dropbox() throws VaultNotFoundException, VaultNotDirectoryException {
         var p = Paths.get(System.getProperty("user.home"), "Dropbox", "1Password.opvault");
         return new Vault(p);
     }
     
-    public Vault(Path path) throws VaultException {
+    public Vault(Path path) throws VaultNotFoundException, VaultNotDirectoryException {
         if (! Files.exists(path)) {
             throw new VaultNotFoundException(path);
         }
@@ -32,7 +35,7 @@ public class Vault {
         this.path = path;
     }
     
-    public List<String> getProfileNames() throws IOException {
+    public List<String> getProfileNames() throws VaultProfilesException {
         try (var files = Files.list(path)) {
             return files.filter((p) -> {
                 if (! Files.isDirectory(p)) {
@@ -44,14 +47,16 @@ public class Vault {
             }).map((p) -> {
                 return p.getFileName().toString();
             }).collect(Collectors.toList());
+        } catch (IOException exc) {
+            throw new VaultProfilesException(path, exc);
         }
     }
     
-    public Profile getDefaultProfile() throws ProfileException {
+    public Profile getDefaultProfile() throws ProfileNotFoundException, ProfileNotFileException, ProfileFormatException, ProfileReadException {
         return getProfile("default");
     }
     
-    public Profile getProfile(String name) throws ProfileException {
+    public Profile getProfile(String name) throws ProfileNotFoundException, ProfileNotFileException, ProfileFormatException, ProfileReadException {
         return new Profile(this, path.resolve(name));
     }
 }

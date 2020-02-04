@@ -1,9 +1,13 @@
 package org.abpass.opvault;
 
-import java.security.GeneralSecurityException;
 import java.time.Instant;
 
-import org.abpass.opvault.Exceptions.InvalidOpdataException;
+import org.abpass.opvault.ItemException.ItemDetailKeyException;
+import org.abpass.opvault.ItemException.ItemDetailParseException;
+import org.abpass.opvault.ItemException.ItemOverviewKeyException;
+import org.abpass.opvault.ItemException.ItemOverviewParseException;
+import org.abpass.opvault.ProfileException.ProfileKeysException;
+import org.abpass.opvault.ProfileException.ProfileLockedException;
 import org.json.zero.ParseException;
 import org.json.zero.hl.JsonParser;
 import org.json.zero.hl.JsonTypedHandler;
@@ -121,31 +125,43 @@ public class Item {
         return tx;
     }
     
-    public ItemOverview getOverview() throws GeneralSecurityException, InvalidOpdataException, ParseException {
+    public ItemOverview getOverview() throws ProfileLockedException, ItemOverviewKeyException, ItemOverviewParseException {
         try (var keys = profile.overviewKeys()) {
             return getOverview(keys);
+        } catch (ProfileKeysException e) {
+            throw new ItemOverviewKeyException(e);
         }
     }
     
-    public ItemOverview getOverview(KeyMacPair overviewKeys) throws InvalidOpdataException, GeneralSecurityException, ParseException {
-        char[] overview = overviewKeys.decryptOpdata(o);
+    public ItemOverview getOverview(KeyMacPair overviewKeys) throws ItemOverviewKeyException, ItemOverviewParseException {
         try {
-            return JsonParser.parse(overview, ItemOverview.newParser());
-        } finally {
-            Security.wipe(overview);
+            char[] overview = overviewKeys.decryptOpdata(o);
+            try {
+                return JsonParser.parse(overview, ItemOverview.newParser());
+            } catch (ParseException e) {
+                throw new ItemOverviewParseException(e);
+            } finally {
+                Security.wipe(overview);
+            }
+        } catch (KeyMacPairException e) {
+            throw new ItemOverviewKeyException(e);
         }
     }
         
-    public ItemDetail getDetail() throws InvalidOpdataException, GeneralSecurityException, ParseException {
-        try (var master = profile.masterKeys(); 
-                var item = master.decryptKeys(k)) {
-            
+    public ItemDetail getDetail() throws ProfileLockedException, ItemDetailParseException, ItemDetailKeyException {
+        try (var master = profile.masterKeys(); var item = master.decryptKeys(k)) {
             char[] detail = item.decryptOpdata(d);
             try {
                 return JsonParser.parse(detail, ItemDetail.newParser());
+            } catch (ParseException e) {
+                throw new ItemDetailParseException(e);
             } finally {
                 Security.wipe(detail);
             }
+        } catch (KeyMacPairException e) {
+            throw new ItemDetailKeyException(e);
+        } catch (ProfileKeysException e) {
+            throw new ItemDetailKeyException(e);
         }
     }
 }

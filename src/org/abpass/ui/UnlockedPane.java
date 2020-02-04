@@ -1,12 +1,11 @@
 package org.abpass.ui;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 
-import org.abpass.opvault.Exceptions.InvalidOpdataException;
-import org.abpass.opvault.Exceptions.ProfileException;
+import org.abpass.opvault.ItemException;
 import org.abpass.opvault.Profile;
-import org.json.zero.ParseException;
+import org.abpass.opvault.ProfileException;
+import org.abpass.opvault.ProfileException.ProfileLockedException;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -41,16 +40,16 @@ public class UnlockedPane extends SplitPane {
                     } else {
                         details.showItem(item.item, item.overview);
                     }
-                } catch (InvalidOpdataException | GeneralSecurityException e) {
+                } catch (ProfileLockedException e) {
                     e.printStackTrace();
-                } catch (ParseException e) {
+                } catch (ItemException e) {
                     e.printStackTrace();
                 }
             }
         });
     }
     
-    public void setProfile(Profile profile) throws ProfileException, InvalidOpdataException, GeneralSecurityException, ParseException {
+    public void setProfile(Profile profile) throws ProfileException, ItemException {
         this.profile.setValue(profile);
         
         this.list.showProfile(profile);

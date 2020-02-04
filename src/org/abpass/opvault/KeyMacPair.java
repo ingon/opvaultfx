@@ -4,7 +4,6 @@ import java.lang.ref.Cleaner;
 import java.lang.ref.Cleaner.Cleanable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.spec.InvalidKeySpecException;
@@ -19,9 +18,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.abpass.opvault.Exceptions.InvalidOpdataException;
-
 // TODO: should we encrypt these like SecureString
+// TODO: maybe we should just mark the offset/len of key/mac
 public final class KeyMacPair implements AutoCloseable {
     private static final Cleaner cleaner = Cleaner.create();
     
@@ -29,9 +27,9 @@ public final class KeyMacPair implements AutoCloseable {
     private final byte[] key;
     private final byte[] mac;
     
-    private KeyMacPair(byte[] combined, int keyFrom, int keyTo, int macFrom, int macTo) {
-        byte[] key = Arrays.copyOfRange(combined, keyFrom, keyTo);
-        byte[] mac = Arrays.copyOfRange(combined, macFrom, macTo);
+    private KeyMacPair(byte[] source, int keyFrom, int keyTo, int macFrom, int macTo) {
+        byte[] key = Arrays.copyOfRange(source, keyFrom, keyTo);
+        byte[] mac = Arrays.copyOfRange(source, macFrom, macTo);
         
         this.cleanable = cleaner.register(this, () -> {
             Security.wipe(key);
@@ -53,28 +51,38 @@ public final class KeyMacPair implements AutoCloseable {
                 Security.wipe(keyData);
             }
         } catch (InvalidKeySpecException e) {
-            throw new RuntimeException("unexpected exc", e);
+            throw new Error("unexpected exc", e);
         } finally {
             keySpec.clearPassword();
         }
     }
     
-    public KeyMacPair decryptKeys(byte[] encData) throws InvalidOpdataException, GeneralSecurityException {
+    public KeyMacPair decryptKeys(byte[] encData) throws KeyMacPairException {
         verifyMac(encData, mac);
         
         // extract the keys
         Cipher cipher = Security.getAESNoPadding();
         IvParameterSpec ivSpec = new IvParameterSpec(encData, 0, 16);
-        cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), ivSpec);
-        byte[] keys = cipher.doFinal(encData, 16, encData.length - 32 - 16);
         try {
-            return new KeyMacPair(keys, keys.length - 64, keys.length - 32, keys.length - 32, keys.length);
-        } finally {
-            Security.wipe(keys);
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), ivSpec);
+            byte[] keys = cipher.doFinal(encData, 16, encData.length - 32 - 16);
+            try {
+                return new KeyMacPair(keys, keys.length - 64, keys.length - 32, keys.length - 32, keys.length);
+            } finally {
+                Security.wipe(keys);
+            }
+        } catch (InvalidKeyException e) {
+            throw new KeyMacPairException(e, "invalid key");
+        } catch (IllegalBlockSizeException e) {
+            throw new KeyMacPairException(e, "illegal block size");
+        } catch (BadPaddingException e) {
+            throw new KeyMacPairException(e, "bad padding");
+        } catch (InvalidAlgorithmParameterException exc) {
+            throw new Error("invalid algorithm param", exc);
         }
     }
     
-    public KeyMacPair decryptOpdataKeys(byte[] encData) throws InvalidOpdataException {
+    public KeyMacPair decryptOpdataKeys(byte[] encData) throws KeyMacPairException {
         byte[] keyData = opdata(encData);
         try {
             var md = Security.getSHA256();
@@ -89,7 +97,7 @@ public final class KeyMacPair implements AutoCloseable {
         }
     }
     
-    public char[] decryptOpdata(byte[] encData) throws InvalidOpdataException {
+    public char[] decryptOpdata(byte[] encData) throws KeyMacPairException {
         byte[] decData = opdata(encData);
         try {
             return Security.decode(decData);
@@ -106,31 +114,31 @@ public final class KeyMacPair implements AutoCloseable {
     private static final int MAC_SIZE = 32;
     private static final int MIN_LENGTH = HEADER_SIZE + PLAIN_TEXT_LENGTH_SIZE + IV_SIZE + 16 + MAC_SIZE;
     
-    public static void verifyMac(byte[] data, byte[] macKey) throws InvalidOpdataException {
+    public static void verifyMac(byte[] data, byte[] macKey) throws KeyMacPairException {
         Mac mac = Security.getHmacSHA256();
         try {
             mac.init(new SecretKeySpec(macKey, "SHA256"));
             var dataMac = mac.doFinal(Arrays.copyOfRange(data, 0, data.length - MAC_SIZE));
             
             if (! Arrays.equals(data, data.length - MAC_SIZE, data.length, dataMac, 0, dataMac.length)) {
-                throw new InvalidOpdataException("mac check failed");
+                throw new KeyMacPairException("mac check failed");
             }
         } catch (InvalidKeyException exc) {
-            throw new InvalidOpdataException("invalid keys");
+            throw new KeyMacPairException("invalid keys");
         } finally {
             mac.reset();
         }
     }
 
-    private byte[] opdata(byte[] text) throws InvalidOpdataException {
+    private byte[] opdata(byte[] text) throws KeyMacPairException {
         if (text.length < MIN_LENGTH) {
-            throw new InvalidOpdataException("unexpected length");
+            throw new KeyMacPairException("unexpected length");
         }
 
         verifyMac(text, mac);
         
         if (! Arrays.equals(text, HEADER_INDEX, HEADER_SIZE, HEADER, 0, HEADER_SIZE)) {
-            throw new InvalidOpdataException("invalid header");
+            throw new KeyMacPairException("invalid header");
         }
         
         var bb = ByteBuffer.wrap(text, HEADER_SIZE, PLAIN_TEXT_LENGTH_SIZE);
@@ -139,7 +147,7 @@ public final class KeyMacPair implements AutoCloseable {
         
         int paddedLen = text.length - HEADER_SIZE - PLAIN_TEXT_LENGTH_SIZE - IV_SIZE - MAC_SIZE;
         if (paddedLen < plaintextLen) {
-            throw new InvalidOpdataException("invalid padded data");
+            throw new KeyMacPairException("invalid padded data");
         }
         
         Cipher cipher = Security.getAESNoPadding();
@@ -153,13 +161,13 @@ public final class KeyMacPair implements AutoCloseable {
                 Security.wipe(decryptData);
             }
         } catch (InvalidKeyException e) {
-            throw new InvalidOpdataException(e, "invalid key");
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new InvalidOpdataException(e, "invalid algorithm");
+            throw new KeyMacPairException(e, "invalid key");
         } catch (IllegalBlockSizeException e) {
-            throw new InvalidOpdataException(e, "illegal block size");
+            throw new KeyMacPairException(e, "illegal block size");
         } catch (BadPaddingException e) {
-            throw new InvalidOpdataException(e, "bad padding");
+            throw new KeyMacPairException(e, "bad padding");
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new Error("invalid algorithm param", e);
         }
     }
 

@@ -3,20 +3,19 @@ package org.abpass.opvault;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.abpass.opvault.Exceptions.InvalidOpdataException;
-import org.abpass.opvault.Exceptions.InvalidPasswordException;
-import org.abpass.opvault.Exceptions.ProfileBandFormatException;
-import org.abpass.opvault.Exceptions.ProfileBandReadException;
-import org.abpass.opvault.Exceptions.ProfileException;
-import org.abpass.opvault.Exceptions.ProfileFormatException;
-import org.abpass.opvault.Exceptions.ProfileNotFileException;
-import org.abpass.opvault.Exceptions.ProfileNotFoundException;
-import org.abpass.opvault.Exceptions.ProfileReadException;
+import org.abpass.opvault.ProfileException.InvalidPasswordException;
+import org.abpass.opvault.ProfileException.ProfileBandFormatException;
+import org.abpass.opvault.ProfileException.ProfileBandReadException;
+import org.abpass.opvault.ProfileException.ProfileFormatException;
+import org.abpass.opvault.ProfileException.ProfileKeysException;
+import org.abpass.opvault.ProfileException.ProfileLockedException;
+import org.abpass.opvault.ProfileException.ProfileNotFileException;
+import org.abpass.opvault.ProfileException.ProfileNotFoundException;
+import org.abpass.opvault.ProfileException.ProfileReadException;
 import org.json.zero.ParseException;
 import org.json.zero.hl.JsonMapHandler;
 import org.json.zero.hl.JsonParser;
@@ -64,7 +63,7 @@ public class Profile {
     
     private KeyMacPair derived;
     
-    Profile(Vault vault, Path path) throws ProfileException {
+    Profile(Vault vault, Path path) throws ProfileNotFoundException, ProfileNotFileException, ProfileFormatException, ProfileReadException {
         var profilePath = path.resolve("profile.js");
         if (! Files.exists(profilePath)) {
             throw new ProfileNotFoundException(profilePath);
@@ -100,7 +99,7 @@ public class Profile {
         
         try (var master = d.decryptOpdataKeys(masterKey)) {
             this.derived = d;
-        } catch(InvalidOpdataException exc) {
+        } catch(KeyMacPairException exc) {
             d.close();
             throw new InvalidPasswordException(exc, path);
         }
@@ -111,23 +110,31 @@ public class Profile {
         derived = null;
     }
     
-    public KeyMacPair overviewKeys() throws InvalidOpdataException, GeneralSecurityException {
+    public KeyMacPair overviewKeys() throws ProfileLockedException, ProfileKeysException {
         if (derived == null) {
-            throw new IllegalStateException("profile locked");
+            throw new ProfileLockedException(path);
         }
         
-        return derived.decryptOpdataKeys(overviewKey);
+        try {
+            return derived.decryptOpdataKeys(overviewKey);
+        } catch (KeyMacPairException e) {
+            throw new ProfileKeysException(path, e);
+        }
     }
 
-    KeyMacPair masterKeys() throws InvalidOpdataException, GeneralSecurityException {
+    KeyMacPair masterKeys() throws ProfileLockedException, ProfileKeysException {
         if (derived == null) {
-            throw new IllegalStateException("profile locked");
+            throw new ProfileLockedException(path);
         }
         
-        return derived.decryptOpdataKeys(masterKey);
+        try {
+            return derived.decryptOpdataKeys(masterKey);
+        } catch (KeyMacPairException e) {
+            throw new ProfileKeysException(path, e);
+        }
     }
 
-    public List<Item> getItems() throws ProfileException {
+    public List<Item> getItems() throws ProfileReadException, ProfileBandFormatException, ProfileBandReadException {
         try (var ds = Files.newDirectoryStream(path, "band_[0123456789ABCDEF].js")) {
             var allItems = new ArrayList<Item>();
             for (var band : ds) {
@@ -140,7 +147,7 @@ public class Profile {
         }
     }
     
-    private Map<String, Item> getItemsInBand(Path band) throws ProfileException {
+    private Map<String, Item> getItemsInBand(Path band) throws ProfileBandFormatException, ProfileBandReadException {
         try {
             String bandStr = Files.readString(band);
             if (! bandStr.startsWith(BAND_PREAMBLE) || ! bandStr.endsWith(BAND_EPILOGUE)) {

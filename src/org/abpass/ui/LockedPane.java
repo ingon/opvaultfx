@@ -1,7 +1,7 @@
 package org.abpass.ui;
 
-import org.abpass.opvault.Exceptions.InvalidPasswordException;
 import org.abpass.opvault.Profile;
+import org.abpass.opvault.ProfileException.InvalidPasswordException;
 import org.abpass.opvault.SecureString;
 import org.abpass.opvault.Security;
 import org.abpass.opvault.Vault;

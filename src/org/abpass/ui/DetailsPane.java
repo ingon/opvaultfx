@@ -1,14 +1,12 @@
 package org.abpass.ui;
 
-import java.security.GeneralSecurityException;
-
-import org.abpass.opvault.Exceptions.InvalidOpdataException;
 import org.abpass.opvault.Item;
 import org.abpass.opvault.ItemDetail;
+import org.abpass.opvault.ItemException;
 import org.abpass.opvault.ItemField;
 import org.abpass.opvault.ItemOverview;
 import org.abpass.opvault.ItemSection;
-import org.json.zero.ParseException;
+import org.abpass.opvault.ProfileException.ProfileLockedException;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -65,7 +63,7 @@ public class DetailsPane extends VBox {
         getChildren().add(detailScroll);
     }
     
-    public void showItem(Item item, ItemOverview overview) throws InvalidOpdataException, GeneralSecurityException, ParseException {
+    public void showItem(Item item, ItemOverview overview) throws ProfileLockedException, ItemException {
         this.item.setValue(item);
         this.overview.setValue(overview);
         

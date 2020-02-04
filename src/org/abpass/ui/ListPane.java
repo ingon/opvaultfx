@@ -1,15 +1,13 @@
 package org.abpass.ui;
 
-import java.security.GeneralSecurityException;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
-import org.abpass.opvault.Exceptions.InvalidOpdataException;
-import org.abpass.opvault.Exceptions.ProfileException;
 import org.abpass.opvault.Item.Category;
+import org.abpass.opvault.ItemException;
 import org.abpass.opvault.ItemOverview;
 import org.abpass.opvault.Profile;
-import org.json.zero.ParseException;
+import org.abpass.opvault.ProfileException;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -91,7 +89,7 @@ public class ListPane extends VBox {
         });
     }
     
-    public void showProfile(Profile profile) throws ProfileException, InvalidOpdataException, GeneralSecurityException, ParseException {
+    public void showProfile(Profile profile) throws ProfileException, ItemException {
         var items = profile.getItems();
         
         this.allItems.clear();
