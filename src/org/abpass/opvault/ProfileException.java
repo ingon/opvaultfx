@@ -80,7 +80,7 @@ public abstract class ProfileException extends Exception {
     public static class ProfileKeysException extends ProfileException {
         private static final long serialVersionUID = 1L;
 
-        public ProfileKeysException(Path path, KeyMacPairException exc) {
+        public ProfileKeysException(Path path, OPDataException exc) {
             super(exc, "invalid profile keys: %s", path.getFileName());
         }
     }

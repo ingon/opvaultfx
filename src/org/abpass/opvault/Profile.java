@@ -61,7 +61,7 @@ public class Profile {
     private byte[] overviewKey;
     private byte[] masterKey;
     
-    private KeyMacPair derived;
+    private OPData derived;
     
     Profile(Vault vault, Path path) throws ProfileNotFoundException, ProfileNotFileException, ProfileFormatException, ProfileReadException {
         var profilePath = path.resolve("profile.js");
@@ -95,11 +95,11 @@ public class Profile {
     }
     
     public void unlock(SecureString password) throws InvalidPasswordException {
-        var d = KeyMacPair.derive(password, salt, iterations);
+        var d = OPData.derive(password, salt, iterations);
         
-        try (var master = d.decryptOpdataKeys(masterKey)) {
+        try (var master = d.decryptGeneralKeys(masterKey)) {
             this.derived = d;
-        } catch(KeyMacPairException exc) {
+        } catch(OPDataException exc) {
             d.close();
             throw new InvalidPasswordException(exc, path);
         }
@@ -110,26 +110,26 @@ public class Profile {
         derived = null;
     }
     
-    public KeyMacPair overviewKeys() throws ProfileLockedException, ProfileKeysException {
+    public OPData overviewKeys() throws ProfileLockedException, ProfileKeysException {
         if (derived == null) {
             throw new ProfileLockedException(path);
         }
         
         try {
-            return derived.decryptOpdataKeys(overviewKey);
-        } catch (KeyMacPairException e) {
+            return derived.decryptGeneralKeys(overviewKey);
+        } catch (OPDataException e) {
             throw new ProfileKeysException(path, e);
         }
     }
 
-    KeyMacPair masterKeys() throws ProfileLockedException, ProfileKeysException {
+    OPData masterKeys() throws ProfileLockedException, ProfileKeysException {
         if (derived == null) {
             throw new ProfileLockedException(path);
         }
         
         try {
-            return derived.decryptOpdataKeys(masterKey);
-        } catch (KeyMacPairException e) {
+            return derived.decryptGeneralKeys(masterKey);
+        } catch (OPDataException e) {
             throw new ProfileKeysException(path, e);
         }
     }

@@ -133,9 +133,9 @@ public class Item {
         }
     }
     
-    public ItemOverview getOverview(KeyMacPair overviewKeys) throws ItemOverviewKeyException, ItemOverviewParseException {
+    public ItemOverview getOverview(OPData overviewKeys) throws ItemOverviewKeyException, ItemOverviewParseException {
         try {
-            char[] overview = overviewKeys.decryptOpdata(o);
+            char[] overview = overviewKeys.decryptData(o);
             try {
                 return JsonParser.parse(overview, ItemOverview.newParser());
             } catch (ParseException e) {
@@ -143,14 +143,14 @@ public class Item {
             } finally {
                 Security.wipe(overview);
             }
-        } catch (KeyMacPairException e) {
+        } catch (OPDataException e) {
             throw new ItemOverviewKeyException(e);
         }
     }
         
     public ItemDetail getDetail() throws ProfileLockedException, ItemDetailParseException, ItemDetailKeyException {
-        try (var master = profile.masterKeys(); var item = master.decryptKeys(k)) {
-            char[] detail = item.decryptOpdata(d);
+        try (var master = profile.masterKeys(); var item = master.decryptConcreteKeys(k)) {
+            char[] detail = item.decryptData(d);
             try {
                 return JsonParser.parse(detail, ItemDetail.newParser());
             } catch (ParseException e) {
@@ -158,7 +158,7 @@ public class Item {
             } finally {
                 Security.wipe(detail);
             }
-        } catch (KeyMacPairException e) {
+        } catch (OPDataException e) {
             throw new ItemDetailKeyException(e);
         } catch (ProfileKeysException e) {
             throw new ItemDetailKeyException(e);
