@@ -42,8 +42,7 @@ public class ItemSectionField {
         handler.stringProperty("n", (t, o) -> t.name = o);
         handler.stringProperty("t", (t, o) -> t.title = o);
         handler.objectProperty("a", A.newParser(), (t, o) -> t.a = o);
-        
-        handler.valueProperty("inputTraits", (t, o) -> System.out.println("inputTraits: " + o));
+        handler.objectProperty("inputTraits", InputTraits.newParser(), (t, o) -> t.inputTraits = o);
         
         return handler;
     }
@@ -70,12 +69,8 @@ public class ItemSectionField {
         case MonthYear:
             handler.monthYearProperty("v", ItemSectionField::setValue);
             break;
-        default:
-            System.out.println("k : " + kind);
-            handler.stringProperty("v", (t, o) -> {
-                t.value = o;
-                System.out.println("v: " + o);
-            });
+        case Gender:
+            handler.stringProperty("v", (t, o) -> t.setValue("female".equals(o) ? Gender.FEMALE : Gender.MALE));
             break;
         }
     }
@@ -86,6 +81,7 @@ public class ItemSectionField {
     private Object value;
     
     private A a;
+    private InputTraits inputTraits;
     
     ItemSectionField() {
     }
@@ -108,6 +104,10 @@ public class ItemSectionField {
     
     public A getA() {
         return a;
+    }
+    
+    public InputTraits getInputTraits() {
+        return inputTraits;
     }
     
     private void setValue(Object value) {
@@ -142,15 +142,15 @@ public class ItemSectionField {
         }
     }
     
-    static class Address {
+    public static class Address {
         static JsonTypedHandler<Address> newParser() {
             var handler = new Json<Address>(Address::new);
             
-            handler.stringProperty("street", Address::setStreet);
-            handler.stringProperty("city", Address::setCity);
-            handler.stringProperty("zip", Address::setZip);
-            handler.stringProperty("state", Address::setState);
-            handler.stringProperty("country", Address::setCountry);
+            handler.stringProperty("street", (t, o) -> t.street = o);
+            handler.stringProperty("city", (t, o) -> t.city = o);
+            handler.stringProperty("zip", (t, o) -> t.zip = o);
+            handler.stringProperty("state", (t, o) -> t.state = o);
+            handler.stringProperty("country", (t, o) -> t.country = o);
             
             return handler;
         }
@@ -180,25 +180,18 @@ public class ItemSectionField {
         public String getCountry() {
             return country;
         }
-        
-        private void setStreet(String street) {
-            this.street = street;
-        }
-
-        private void setCity(String city) {
-            this.city = city;
-        }
-
-        private void setZip(String zip) {
-            this.zip = zip;
-        }
-
-        private void setState(String state) {
-            this.state = state;
-        }
-
-        private void setCountry(String country) {
-            this.country = country;
+    }
+    
+    public static enum Gender {
+        MALE,
+        FEMALE;
+    }
+    
+    public static class InputTraits {
+        static JsonTypedHandler<InputTraits> newParser() {
+            var handler = new Json<InputTraits>(InputTraits::new);
+            
+            return handler;
         }
     }
 }
