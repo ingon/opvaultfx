@@ -1,6 +1,7 @@
 package org.abpass.ui;
 
 import org.abpass.opvault.Item;
+import org.abpass.opvault.ItemAttachment;
 import org.abpass.opvault.ItemDetail;
 import org.abpass.opvault.ItemException;
 import org.abpass.opvault.ItemField;
@@ -25,8 +26,12 @@ public class DetailsPane extends VBox {
     private final ObjectProperty<ItemOverview> overview = new SimpleObjectProperty<ItemOverview>(this, "overview");
     private final ObjectProperty<ItemDetail> detail = new SimpleObjectProperty<ItemDetail>(this, "detail");
     
-    private final ObservableListValue<ItemField> fields = new SimpleListProperty<ItemField>(this, "fields", FXCollections.observableArrayList());
-    private final ObservableListValue<ItemSection> sections = new SimpleListProperty<ItemSection>(this, "sections", FXCollections.observableArrayList());
+    private final ObservableListValue<ItemField> fields = 
+            new SimpleListProperty<ItemField>(this, "fields", FXCollections.observableArrayList());
+    private final ObservableListValue<ItemAttachment> attachments = 
+            new SimpleListProperty<ItemAttachment>(this, "attachments", FXCollections.observableArrayList());
+    private final ObservableListValue<ItemSection> sections = 
+            new SimpleListProperty<ItemSection>(this, "sections", FXCollections.observableArrayList());
     
     private final ImageView icon = new ImageView();
     private final Label title = new Label();
@@ -34,6 +39,7 @@ public class DetailsPane extends VBox {
     
     private final VBox detailBox = new VBox();
     private final ItemFieldsPane fieldsPane;
+    private final ItemAttachmentsPane attachmentsPane;
     private final ItemSectionsPane sectionsPane;
     
     public DetailsPane() {
@@ -54,6 +60,9 @@ public class DetailsPane extends VBox {
         
         fieldsPane = new ItemFieldsPane(fields);
         detailBox.getChildren().add(fieldsPane);
+        
+        attachmentsPane = new ItemAttachmentsPane(attachments);
+        detailBox.getChildren().add(attachmentsPane);
         
         sectionsPane = new ItemSectionsPane(sections);
         detailBox.getChildren().add(sectionsPane);
@@ -80,12 +89,17 @@ public class DetailsPane extends VBox {
         
         title.setText(overview.getTitle());
         detail.setValue(item.getDetail());
+        
         fields.setAll(detail.getValue().getFields());
+        attachments.setAll(item.getAttachments());
         sections.setAll(detail.getValue().getSections());
         
         detailBox.getChildren().clear();
         if (! fields.isEmpty()) {
             detailBox.getChildren().add(fieldsPane);
+        }
+        if (! attachments.isEmpty()) {
+            detailBox.getChildren().add(attachmentsPane);
         }
         if (! sections.isEmpty()) {
             detailBox.getChildren().add(sectionsPane);

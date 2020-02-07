@@ -84,4 +84,12 @@ public abstract class ProfileException extends Exception {
             super(exc, "invalid profile keys: %s", path.getFileName());
         }
     }
+    
+    public static class ProfileAttachmentException extends ProfileException {
+        private static final long serialVersionUID = 1L;
+        
+        public ProfileAttachmentException(Path path) {
+            super("could not load attachment: %s", path.getFileName());
+        }
+    }
 }

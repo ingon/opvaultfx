@@ -1,6 +1,8 @@
 package org.abpass.opvault;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.abpass.opvault.ItemException.ItemDetailKeyException;
 import org.abpass.opvault.ItemException.ItemDetailParseException;
@@ -84,6 +86,8 @@ public class Item {
     private Instant updated;
     private Instant tx;
     
+    private final List<ItemAttachment> attachments = new ArrayList<ItemAttachment>();
+    
     private byte[] hmac; // TODO verify item hmac!!!
     private byte[] o;
     private byte[] k;
@@ -163,5 +167,24 @@ public class Item {
         } catch (ProfileKeysException e) {
             throw new ItemDetailKeyException(e);
         }
+    }
+    
+    OPData overviewKeys() throws ProfileLockedException, ProfileKeysException {
+        return profile.overviewKeys();
+    }
+    
+    // TODO maybe this should happen completely in this class?
+    OPData keys() throws ProfileLockedException, ProfileKeysException, OPDataException { 
+        try (var master = profile.masterKeys()) {
+            return master.decryptConcreteKeys(k);
+        }
+    }
+
+    public List<ItemAttachment> getAttachments() {
+        return attachments;
+    }
+    
+    void addAttachment(ItemAttachment att) {
+        this.attachments.add(att);
     }
 }

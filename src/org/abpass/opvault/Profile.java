@@ -3,11 +3,14 @@ package org.abpass.opvault;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.abpass.opvault.ProfileException.InvalidPasswordException;
+import org.abpass.opvault.ProfileException.ProfileAttachmentException;
 import org.abpass.opvault.ProfileException.ProfileBandFormatException;
 import org.abpass.opvault.ProfileException.ProfileBandReadException;
 import org.abpass.opvault.ProfileException.ProfileFormatException;
@@ -31,18 +34,18 @@ public class Profile {
     static JsonTypedHandler<Profile> newParser(Profile profile) {
         Json<Profile> handler = new Json<Profile>(() -> profile);
         handler.stringProperty("uuid", (t, o) -> t.uuid = o);
+        
+        handler.stringProperty("passwordHint", (t, o) -> t.passwordHint = o);
+        handler.stringProperty("profileName", (t, o) -> t.profileName = o);
+        handler.stringProperty("lastUpdatedBy", (t, o) -> t.lastUpdatedBy = o);
+        handler.instantProperty("createdAt", (t, o) -> t.createdAt = o);
+        handler.instantProperty("updatedAt", (t, o) -> t.updatedAt = o);
+        handler.instantProperty("tx", (t, o) -> t.tx = o);
+        
         handler.numberProperty("iterations", (t, o) -> t.iterations = o.intValue());
         handler.base64Property("salt", (t, o) -> t.salt = o);
         handler.base64Property("overviewKey", (t, o) -> t.overviewKey = o);
         handler.base64Property("masterKey", (t, o) -> t.masterKey = o);
-        
-        // TODO
-        handler.stringProperty("lastUpdatedBy", (t, o) -> {});
-        handler.stringProperty("profileName", (t, o) -> {});
-        handler.instantProperty("createdAt", (t, o) -> {});
-        handler.instantProperty("updatedAt", (t, o) -> {});
-        handler.instantProperty("tx", (t, o) -> {});
-        handler.stringProperty("passwordHint", (t, o) -> {});
         
         return handler;
     }
@@ -55,6 +58,13 @@ public class Profile {
     public final Path path;
     
     private String uuid;
+    
+    private String passwordHint;
+    private String profileName;
+    private String lastUpdatedBy;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private Instant tx;
     
     private int iterations;
     private byte[] salt;
@@ -92,6 +102,30 @@ public class Profile {
     
     public String getUUID() {
         return uuid;
+    }
+    
+    public String getPasswordHint() {
+        return passwordHint;
+    }
+    
+    public String getProfileName() {
+        return profileName;
+    }
+    
+    public String getLastUpdatedBy() {
+        return lastUpdatedBy;
+    }
+    
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+    
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    public Instant getTx() {
+        return tx;
     }
     
     public void unlock(SecureString password) throws InvalidPasswordException {
@@ -134,14 +168,17 @@ public class Profile {
         }
     }
 
-    public List<Item> getItems() throws ProfileReadException, ProfileBandFormatException, ProfileBandReadException {
+    public List<Item> getItems() throws ProfileReadException, ProfileBandFormatException, ProfileBandReadException, ProfileAttachmentException {
         try (var ds = Files.newDirectoryStream(path, "band_[0123456789ABCDEF].js")) {
-            var allItems = new ArrayList<Item>();
+            var allItems = new HashMap<String, Item>();
             for (var band : ds) {
                 var items = getItemsInBand(band);
-                allItems.addAll(items.values());
+                allItems.putAll(items);
             }
-            return allItems;
+            
+            loadAttachments(allItems);
+            
+            return new ArrayList<Item>(allItems.values());
         } catch (IOException exc) {
             throw new ProfileReadException(path, exc);
         }
@@ -160,6 +197,24 @@ public class Profile {
             throw new ProfileBandReadException(band, exc);
         } catch (ParseException exc) {
             throw new ProfileBandReadException(band, exc);
+        }
+    }
+    
+    private void loadAttachments(Map<String, Item> items) throws ProfileReadException, ProfileAttachmentException {
+        try (var ds = Files.newDirectoryStream(path, "*.attachment")) {
+            for (var attachmentPath : ds) {
+                String name = attachmentPath.getFileName().toString();
+                String itemUUID = name.substring(0, name.indexOf("_"));
+                Item item = items.get(itemUUID);
+                if (item == null) {
+                    throw new ProfileAttachmentException(attachmentPath);
+                }
+                
+                byte[] data = Files.readAllBytes(attachmentPath);
+                ItemAttachment.loadAttachment(item, attachmentPath, data);
+            }
+        } catch (IOException | ItemAttachmentException exc) {
+            throw new ProfileReadException(path, exc);
         }
     }
 }

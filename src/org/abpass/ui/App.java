@@ -30,8 +30,11 @@ public class App extends Application {
     
     @Override
     public void init() throws Exception {
-        vault = new Vault(Paths.get("/home/sungon/Downloads/freddy-2013-12-04/onepassword_data"));
-//        vault = Vault.dropbox();
+        var freddy = Paths.get("/home/sungon/Downloads/freddy-2013-12-04/onepassword_data");
+        var dropbox = Paths.get(System.getProperty("user.home"), "Dropbox", "1Password.opvault");
+        
+        vault = new Vault(dropbox);
+//        vault = new Vault(freddy);
         profile = vault.getDefaultProfile();
         
         reloadSvc = new ReloadSceneCssService();

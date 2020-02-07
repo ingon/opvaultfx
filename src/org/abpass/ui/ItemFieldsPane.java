@@ -1,16 +1,15 @@
 package org.abpass.ui;
 
 import org.abpass.opvault.ItemField;
-import org.abpass.opvault.SecureString;
 import org.abpass.opvault.ItemField.Designation;
 import org.abpass.opvault.ItemField.Type;
+import org.abpass.opvault.SecureString;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableListValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 

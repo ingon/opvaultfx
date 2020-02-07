@@ -13,6 +13,7 @@ public class ItemField {
         B("B"),
         I("I"),
         S("S"),
+        A("A"),
         EMPTY(""),
         ;
         

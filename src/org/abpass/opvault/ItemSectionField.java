@@ -120,9 +120,7 @@ public class ItemSectionField {
             handler.stringProperty("guarded", (t, o) -> t.guarded = "yes".equalsIgnoreCase(o));
             handler.stringProperty("generate", (t, o) -> t.noGenerate = "off".equalsIgnoreCase(o));
             handler.stringProperty("clipboardFilter", (t, o) -> t.clipboardFilder = o);
-            
-            // TODO
-            handler.valueProperty("multiline", (t, o) -> System.out.println("multiline: " + o));
+            handler.stringProperty("multiline", (t, o) -> t.multiline = "yes".equalsIgnoreCase(o));
             
             return handler;
         }
@@ -130,15 +128,22 @@ public class ItemSectionField {
         private Boolean guarded;
         private Boolean noGenerate;
         private String clipboardFilder;
+        private Boolean multiline;
         
         public Boolean getGuarded() {
             return guarded;
         }
+        
         public Boolean getNoGenerate() {
             return noGenerate;
         }
+        
         public String getClipboardFilder() {
             return clipboardFilder;
+        }
+        
+        public Boolean getMultiline() {
+            return multiline;
         }
     }
     
@@ -188,10 +193,43 @@ public class ItemSectionField {
     }
     
     public static class InputTraits {
+        public static enum Keyboard {
+            Default,
+            EmailAddress,
+            NamePhonePad,
+            NumbersAndPunctuation,
+            NumberPad,
+        }
+        
+        public static enum AutoCapitalization {
+            Words,
+            EmailAddress,
+        }
+        
         static JsonTypedHandler<InputTraits> newParser() {
             var handler = new Json<InputTraits>(InputTraits::new);
             
+            handler.stringProperty("keyboard", (t, o) -> t.keyboard = Keyboard.valueOf(o));
+            handler.stringProperty("autocapitalization", (t, o) -> t.autoCapitalization = AutoCapitalization.valueOf(o));
+            handler.stringProperty("autocorrection", (t, o) -> t.autoCorrection = "yes".equals(o));
+            
             return handler;
+        }
+        
+        private Keyboard keyboard;
+        private AutoCapitalization autoCapitalization;
+        private Boolean autoCorrection;
+        
+        public Keyboard getKeyboard() {
+            return keyboard;
+        }
+        
+        public AutoCapitalization getAutoCapitalization() {
+            return autoCapitalization;
+        }
+        
+        public Boolean getAutoCorrection() {
+            return autoCorrection;
         }
     }
 }

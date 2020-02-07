@@ -106,6 +106,10 @@ public final class OPData implements AutoCloseable {
         }
     }
 
+    public byte[] decryptRawData(byte[] input) throws OPDataException {
+        return opdata(input);
+    }
+
     private static final byte[] HEADER = new byte[]{'o', 'p', 'd', 'a', 't', 'a', '0', '1'};
     private static final int HEADER_INDEX = 0;
     private static final int HEADER_SIZE = HEADER.length;
