@@ -3,7 +3,6 @@ package org.abpass.ui;
 import org.abpass.opvault.ItemField;
 import org.abpass.opvault.ItemField.Designation;
 import org.abpass.opvault.ItemField.Type;
-import org.abpass.opvault.SecureString;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableListValue;
@@ -26,7 +25,7 @@ public class ItemFieldsPane extends VBox {
                 for (var f : newValue) {
                     getChildren().add(new Label(f.getName()));
                     if (f.getDesignation() == Designation.Password || f.getType() == Type.Password) {
-                        getChildren().add(new PasswordPane((SecureString) f.getValue()));
+                        getChildren().add(new PasswordPane(f.getValue()));
                     } else {
                         var txt = new TextField();
                         f.getValue().accept((chs) -> {

@@ -105,7 +105,7 @@ public class Security {
         return Base64.getDecoder().decode(data);
     }
     
-    static void wipe(byte[] data) {
+    public static void wipe(byte[] data) {
         for (int i = 0, n = data.length; i < n; i++) {
             data[i] = 0;
         }

@@ -142,7 +142,7 @@ public class ItemAttachment {
             }
         }
         
-        return this.icon; // none of the keys seems to work
+        return this.icon; // TODO none of the keys seems to work for v2
     }
     
     public byte[] getData() throws ItemAttachmentDataException {
