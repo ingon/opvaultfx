@@ -1,5 +1,7 @@
 package org.abpass.ui;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
@@ -25,7 +27,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -59,9 +63,14 @@ public class ListPane extends VBox {
         
         search = new TextField();
         search.setId("list-search");
-        getChildren().add(search);
+        
+        var searchWrap = new BorderPane(search);
+        searchWrap.setId("list-search-wrap");
+        
+        getChildren().add(searchWrap);
         
         list = new ListView<ItemWithOverview>(visibleItems);
+        list.setId("list-items");
         list.setCellFactory((view) -> new ItemListCell());
         setVgrow(list, Priority.ALWAYS);
         getChildren().add(list);
@@ -124,8 +133,8 @@ public class ListPane extends VBox {
             title.getStyleClass().add("item-list-cell-title");
             detail.getStyleClass().add("item-list-cell-detail");
             
-            icon.setFitWidth(32);
-            icon.setFitHeight(32);
+            icon.setFitWidth(36);
+            icon.setFitHeight(36);
             icon.setPreserveRatio(true);
             
             grid.add(icon, 0, 0, 1, 2);
@@ -145,6 +154,7 @@ public class ListPane extends VBox {
         protected void updateItem(ItemWithOverview item, boolean empty) {
             super.updateItem(item, empty);
             if (empty) {
+                icon.setImage(null);
                 grid.maxWidthProperty().unbind();
                 setGraphic(null);
                 return;
@@ -152,9 +162,51 @@ public class ListPane extends VBox {
             
             grid.maxWidthProperty().bind(getListView().widthProperty().subtract(44));
             
+            icon.setImage(getCategoryIcon(item.item.getCategory()));
             title.setText(item.overview.getTitle());
             detail.setText(item.overview.getAinfo());
             setGraphic(grid);
+        }
+    }
+    
+    private static Image getCategoryIcon(Category c) {
+        switch (c) {
+        case CreditCard:
+            return getIconFromFile("images/credit_card_white_36dp.png");
+        case Identity:
+            return getIconFromFile("images/identity_white_36dp.png");
+        case Login:
+        case Password:
+            return getIconFromFile("images/lock_white_36dp.png");
+        case SoftwareLicense:
+        case Membership:
+        case OutdoorLicense:
+        case Rewards:
+        case SecureNote:
+            return getIconFromFile("images/description_white_36dp.png");
+        case BankAccount:
+            return getIconFromFile("images/account_balance_white_36dp.png");
+        case Email:
+            return getIconFromFile("images/email_white_36dp.png");
+        case Database:
+        case Server:
+            return getIconFromFile("images/security_white_36dp.png");
+        case Router:
+            return getIconFromFile("images/router_white_36dp.png");
+        case DriverLicense:
+        case Passport:
+        case SSN:
+            return getIconFromFile("images/recent_actors_white_36dp.png");
+        default:
+            return null;
+        }
+    }
+    
+    private static Image getIconFromFile(String name) {
+        try {
+            return new Image(new FileInputStream(name));
+        } catch (FileNotFoundException e) {
+            return null;
         }
     }
 }

@@ -46,14 +46,19 @@ public class DetailsPane extends VBox {
         setId("details");
         
         var headerGrid = new GridPane();
+        headerGrid.setId("details-header");
         getChildren().add(headerGrid);
         
+        icon.setId("details-header-icon");
         icon.setFitWidth(64);
         icon.setFitHeight(64);
         icon.setPreserveRatio(true);
-        
         headerGrid.add(icon, 0, 0, 1, 2);
+        
+        title.setId("details-header-title");
         headerGrid.add(title, 1, 0, 1, 1);
+        
+        subtitle.setId("details-header-subtitle");
         headerGrid.add(subtitle, 1, 1, 1, 1);
 
         detailBox.getStyleClass().add("item-detail-box");
@@ -88,6 +93,7 @@ public class DetailsPane extends VBox {
         }
         
         title.setText(overview.getTitle());
+        subtitle.setText(item.getCategory().name());
         detail.setValue(item.getDetail());
         
         fields.setAll(detail.getValue().getFields());

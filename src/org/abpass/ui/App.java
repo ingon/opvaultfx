@@ -33,8 +33,8 @@ public class App extends Application {
         var freddy = Paths.get("/home/sungon/Downloads/freddy-2013-12-04/onepassword_data");
         var dropbox = Paths.get(System.getProperty("user.home"), "Dropbox", "1Password.opvault");
         
-        vault = new Vault(dropbox);
-//        vault = new Vault(freddy);
+//        vault = new Vault(dropbox);
+        vault = new Vault(freddy);
         profile = vault.getDefaultProfile();
         
         reloadSvc = new ReloadSceneCssService();
@@ -52,7 +52,7 @@ public class App extends Application {
         unlockedPane = new UnlockedPane();
         
         var scene = new Scene(stack, 1024, 768);
-        scene.fillProperty().set(Color.web("#202020"));
+        scene.fillProperty().set(Color.web("#121212"));
         reloadSvc.addSceneCss(scene, "app.css");
         
         stack.setPrefSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);

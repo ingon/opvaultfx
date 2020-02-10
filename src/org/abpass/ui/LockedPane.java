@@ -8,26 +8,25 @@ import org.abpass.opvault.Vault;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
-import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
-public class LockedPane extends BorderPane {
-    
+public class LockedPane extends VBox {
     public final Vault vault;
     public final Profile profile;
     public final SimpleBooleanProperty unlocked = new SimpleBooleanProperty(this, "locked", false);
     
     private final SecurePasswordField passwordFld;
-    private final Label errorLbl;
     
     public LockedPane(Vault vault, Profile profile) {
         this.vault = vault;
@@ -36,22 +35,20 @@ public class LockedPane extends BorderPane {
         setId("locked");
         
         VBox center = new VBox();
-        center.setMinSize(200, 200);
-        center.setMaxSize(400, 400);
+        center.setId("locked-center");
         
-        var passwordLbl = new Label("Password: ");
-        center.getChildren().add(passwordLbl);
+        BorderPane passwordRow = new BorderPane();
+        passwordRow.setId("locked-password");
+        center.getChildren().add(passwordRow);
         
         passwordFld = new SecurePasswordField();
-        center.getChildren().add(passwordFld);
+        passwordRow.setCenter(passwordFld);
         
         var unlockBtn = new Button("Unlock");
-        center.getChildren().add(unlockBtn);
+        unlockBtn.setId("locked-unlock");
+        passwordRow.setRight(unlockBtn);
         
-        errorLbl = new Label("");
-        center.getChildren().add(errorLbl);
-        
-        setCenter(center);
+        getChildren().add(center);
         
         passwordFld.addEventHandler(ActionEvent.ACTION, this::act);
         unlockBtn.setOnAction(this::act);
@@ -66,7 +63,7 @@ public class LockedPane extends BorderPane {
             profile.unlock(passwordFld.text);
             unlocked.setValue(true);
         } catch (InvalidPasswordException e) {
-            errorLbl.setText(e.getMessage());
+            passwordFld.error.set(e.getMessage());
         } finally {
             passwordFld.text.close();
             passwordFld.text = null;
@@ -76,7 +73,9 @@ public class LockedPane extends BorderPane {
     
     private static class SecurePasswordField extends Control {
         private SecureString text = null;
+        
         private final SimpleIntegerProperty len = new SimpleIntegerProperty(this, "len", 0);
+        private final SimpleStringProperty error = new SimpleStringProperty(this, "error");
         
         public SecurePasswordField() {
             setFocusTraversable(true);
@@ -120,6 +119,10 @@ public class LockedPane extends BorderPane {
         }
         
         private void append(char[] data) {
+            if (error.get() != null) {
+                error.set(null);
+            }
+            
             text = text == null ? new SecureString(data) : text.append(data);
             len.set(len.get() + 1);
             Security.wipe(data);
@@ -148,15 +151,21 @@ public class LockedPane extends BorderPane {
         
         private void redraw(int len) {
             var ctx = canvas.getGraphicsContext2D();
+            ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            
             ctx.setFill(Color.web("#fefefe"));
-            ctx.fillRoundRect(0, 0, canvas.getWidth(), canvas.getHeight(), 8, 8);
-            
-            ctx.setStroke(Color.web("#282828"));
-            ctx.strokeRoundRect(0, 0, canvas.getWidth(), canvas.getHeight(), 8, 8);
-            
-            for (int i = 0; i < len; i++) {
-                ctx.setFill(Color.web("#202020"));
-                ctx.fillOval(i * 32 + 8, 8, 24, 24);
+            if (len == 0) {
+                ctx.setFont(Font.font(20));
+                if (getSkinnable().error.get() != null) {
+                    ctx.setFill(Color.web("#CF6679"));
+                    ctx.fillText(getSkinnable().error.get(), 8, 24);
+                } else {
+                    ctx.fillText("Master password", 8, 24);
+                }
+            } else {
+                for (int i = 0; i < len; i++) {
+                    ctx.fillOval(i * 32 + 8, 8, 24, 24);
+                }
             }
         }
         
