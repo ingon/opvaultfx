@@ -8,12 +8,14 @@ import org.abpass.opvault.ItemField;
 import org.abpass.opvault.ItemOverview;
 import org.abpass.opvault.ItemSection;
 import org.abpass.opvault.ProfileException.ProfileLockedException;
+import org.abpass.ui.CategoryIcons.Size;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableListValue;
 import javafx.collections.FXCollections;
+import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
@@ -38,9 +40,9 @@ public class DetailsPane extends VBox {
     private final Label subtitle = new Label();
     
     private final VBox detailBox = new VBox();
-    private final ItemFieldsPane fieldsPane;
-    private final ItemAttachmentsPane attachmentsPane;
-    private final ItemSectionsPane sectionsPane;
+    private final ItemFieldsPane fieldsPane = new ItemFieldsPane(fields);
+    private final ItemAttachmentsPane attachmentsPane = new ItemAttachmentsPane(attachments);
+    private final ItemSectionsPane sectionsPane = new ItemSectionsPane(sections);
     
     public DetailsPane() {
         setId("details");
@@ -50,9 +52,7 @@ public class DetailsPane extends VBox {
         getChildren().add(headerGrid);
         
         icon.setId("details-header-icon");
-        icon.setFitWidth(64);
-        icon.setFitHeight(64);
-        icon.setPreserveRatio(true);
+        GridPane.setValignment(icon, VPos.TOP);
         headerGrid.add(icon, 0, 0, 1, 2);
         
         title.setId("details-header-title");
@@ -61,16 +61,8 @@ public class DetailsPane extends VBox {
         subtitle.setId("details-header-subtitle");
         headerGrid.add(subtitle, 1, 1, 1, 1);
 
-        detailBox.getStyleClass().add("item-detail-box");
-        
-        fieldsPane = new ItemFieldsPane(fields);
-        detailBox.getChildren().add(fieldsPane);
-        
-        attachmentsPane = new ItemAttachmentsPane(attachments);
-        detailBox.getChildren().add(attachmentsPane);
-        
-        sectionsPane = new ItemSectionsPane(sections);
-        detailBox.getChildren().add(sectionsPane);
+        detailBox.setId("details-data");
+        detailBox.getChildren().addAll(fieldsPane, sectionsPane, attachmentsPane);
         
         var detailScroll = new ScrollPane(detailBox);
         detailScroll.setFitToWidth(true);
@@ -82,8 +74,10 @@ public class DetailsPane extends VBox {
         this.overview.setValue(overview);
         
         if (item == null) {
+            icon.setImage(null);
             title.setText("");
-            detail.setValue(null);;
+            detail.setValue(null);
+            
             fields.clear();
             sections.clear();
             
@@ -92,23 +86,24 @@ public class DetailsPane extends VBox {
             return;
         }
         
+        icon.setImage(CategoryIcons.get(item, Size.BIG));
         title.setText(overview.getTitle());
         subtitle.setText(item.getCategory().name());
         detail.setValue(item.getDetail());
         
         fields.setAll(detail.getValue().getFields());
-        attachments.setAll(item.getAttachments());
         sections.setAll(detail.getValue().getSections());
+        attachments.setAll(item.getAttachments());
         
         detailBox.getChildren().clear();
         if (! fields.isEmpty()) {
             detailBox.getChildren().add(fieldsPane);
         }
-        if (! attachments.isEmpty()) {
-            detailBox.getChildren().add(attachmentsPane);
-        }
         if (! sections.isEmpty()) {
             detailBox.getChildren().add(sectionsPane);
+        }
+        if (! attachments.isEmpty()) {
+            detailBox.getChildren().add(attachmentsPane);
         }
     }
 }

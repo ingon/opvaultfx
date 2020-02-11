@@ -1,7 +1,5 @@
 package org.abpass.ui;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
@@ -10,6 +8,7 @@ import org.abpass.opvault.ItemException;
 import org.abpass.opvault.ItemOverview;
 import org.abpass.opvault.Profile;
 import org.abpass.opvault.ProfileException;
+import org.abpass.ui.CategoryIcons.Size;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -28,7 +27,6 @@ import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -128,21 +126,17 @@ public class ListPane extends VBox {
             title.getStyleClass().add("item-list-cell-title");
             detail.getStyleClass().add("item-list-cell-detail");
             
-            icon.setFitWidth(36);
-            icon.setFitHeight(36);
-            icon.setPreserveRatio(true);
-            
             grid.add(icon, 0, 0, 1, 2);
             GridPane.setHgrow(icon, Priority.NEVER);
             GridPane.setVgrow(icon, Priority.NEVER);
             GridPane.setHalignment(icon, HPos.CENTER);
-            GridPane.setValignment(icon, VPos.CENTER);
+            GridPane.setValignment(icon, VPos.TOP);
             
             grid.add(title, 1, 0, 1, 1);
-            GridPane.setValignment(title, VPos.CENTER);
+            GridPane.setValignment(title, VPos.TOP);
             
             grid.add(detail, 1, 1, 1, 1);
-            GridPane.setValignment(detail, VPos.CENTER);
+            GridPane.setValignment(detail, VPos.TOP);
         }
         
         @Override
@@ -157,51 +151,11 @@ public class ListPane extends VBox {
             
             grid.maxWidthProperty().bind(getListView().widthProperty().subtract(44));
             
-            icon.setImage(getCategoryIcon(item.item.getCategory()));
+            icon.setImage(CategoryIcons.get(item.item, Size.SMALL));
             title.setText(item.overview.getTitle());
             detail.setText(item.overview.getAinfo());
             setGraphic(grid);
         }
     }
     
-    private static Image getCategoryIcon(Category c) {
-        switch (c) {
-        case CreditCard:
-            return getIconFromFile("images/credit_card_white_36dp.png");
-        case Identity:
-            return getIconFromFile("images/identity_white_36dp.png");
-        case Login:
-        case Password:
-            return getIconFromFile("images/lock_white_36dp.png");
-        case SoftwareLicense:
-        case Membership:
-        case OutdoorLicense:
-        case Rewards:
-        case SecureNote:
-            return getIconFromFile("images/description_white_36dp.png");
-        case BankAccount:
-            return getIconFromFile("images/account_balance_white_36dp.png");
-        case Email:
-            return getIconFromFile("images/email_white_36dp.png");
-        case Database:
-        case Server:
-            return getIconFromFile("images/security_white_36dp.png");
-        case Router:
-            return getIconFromFile("images/router_white_36dp.png");
-        case DriverLicense:
-        case Passport:
-        case SSN:
-            return getIconFromFile("images/recent_actors_white_36dp.png");
-        default:
-            return null;
-        }
-    }
-    
-    private static Image getIconFromFile(String name) {
-        try {
-            return new Image(new FileInputStream(name));
-        } catch (FileNotFoundException e) {
-            return null;
-        }
-    }
 }

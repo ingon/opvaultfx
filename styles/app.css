@@ -65,11 +65,11 @@
 }
 
 .scroll-bar, .list-view .scroll-bar {
-	-fx-background-color: app-bg;
+	-fx-background-color: app-bg-surface;
 }
 
 .scroll-bar .track, .list-view .scroll-bar .track {
-	-fx-background-color: app-bg;
+	-fx-background-color: app-bg-surface;
 }
 
 .scroll-bar .thumb, .list-view .scroll-bar .thumb {
@@ -135,21 +135,22 @@
 
 #header {
 	-fx-padding: 1em;
+	-fx-background-color: app-bg-surface-dp2;
 }
 
 #header-search {
 	-fx-pref-column-count: 24;
-	-fx-background-color: app-bg-surface-dp3;
+	-fx-background-color: app-bg-surface-dp4;
 	-fx-text-fill: app-fg;
 	-fx-highlight-fill: app-bg-primary;
 	-fx-highlight-text-fill: app-bg;
-	-fx-effect: app-bg-shadow-dp4;
+	-fx-effect: app-bg-shadow-dp2;
 }
 
 #header-lock {
 	-fx-alignment: center;
 	-fx-text-alignment: center;
-	-fx-effect: app-bg-shadow-dp4;
+	-fx-effect: app-bg-shadow-dp2;
 	-fx-text-fill: app-bg;
 	-fx-background-color: app-bg-primary;
 	-fx-font-weight: bold;
@@ -169,12 +170,17 @@
 }
 
 #list .item-list-cell-grid {
+	-fx-padding: 0.3em 0 0.3em 0;
 	-fx-hgap: 0.5em;
-	-fx-vgap: 0.5em;
+	-fx-vgap: 0.3em;
 }
 
 #list .list-cell:selected {
 	-fx-background-color: app-bg-surface-dp12;
+}
+
+#list .list-cell:hover {
+	-fx-background-color: app-bg-surface-dp4;
 }
 
 #list .item-list-cell-title {
@@ -207,21 +213,22 @@
 
 #details-header {
 	-fx-background-color: app-bg-surface;
-	-fx-padding: 1em 0.5em 0.5em 0.5em;
-	-fx-hgap: 0.5em;
-	-fx-vgap: 0.5em;
+	-fx-padding: 1em 1em 0.5em 1em;
+	-fx-hgap: 1em;
+//	-fx-vgap: 0.3em;
 }
 
 #details-header-title {
 	-fx-font-weight: bold;
 	-fx-font-size: 1.2em;
+	-fx-text-fill: app-fg-high;
 }
 
 #details-header-subtitle {
-	-fx-text-fill: derive(app-fg, -30%);
+	-fx-text-fill: app-fg-medium;
 }
 
-.item-detail-box {
+#details-data {
 	-fx-padding: 1em;
 	-fx-spacing: 1em;
 }
@@ -251,6 +258,7 @@
 }
 
 .item-fields .text-field, .item-section .text-field {
+	-fx-font-weight: bolder;
 	-fx-padding: 0.5em;
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-text-fill: app-fg-high;
