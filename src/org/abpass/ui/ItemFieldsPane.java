@@ -23,7 +23,10 @@ public class ItemFieldsPane extends VBox {
                 getChildren().clear();
                 
                 for (var f : newValue) {
-                    getChildren().add(new Label(f.getName()));
+                    var lbl = new Label(f.getName());
+                    lbl.getStyleClass().add("item-field-header");
+                    getChildren().add(lbl);
+                    
                     if (f.getDesignation() == Designation.Password || f.getType() == Type.Password) {
                         getChildren().add(new PasswordPane(f.getValue()));
                     } else {

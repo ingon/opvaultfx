@@ -12,8 +12,12 @@ import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.BorderPane;
 
-public class UnlockedPane extends SplitPane {
+public class UnlockedPane extends BorderPane {
+    private final HeaderPane header = new HeaderPane();
+    
+    private final SplitPane split = new SplitPane();
     private final ListPane list = new ListPane();
     private final DetailsPane details = new DetailsPane();
     
@@ -22,13 +26,16 @@ public class UnlockedPane extends SplitPane {
     public UnlockedPane() throws IOException {
         setId("unlocked");
         
-        getItems().add(list);
+        setTop(header);
+        setCenter(split);
+        
+        split.setId("unlocked-split");
+        split.setDividerPositions(0.35);
         SplitPane.setResizableWithParent(list, false);
-        
-        getItems().add(details);
         SplitPane.setResizableWithParent(details, false);
+        split.getItems().addAll(list, details);
         
-        setDividerPositions(0.35);
+        list.searchProperty().bind(header.searchTextProperty());
         
         list.itemProperty().addListener(new InvalidationListener() {
             @Override

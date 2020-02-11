@@ -12,6 +12,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -19,8 +20,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class App extends Application {
-    private ReloadSceneCssService reloadSvc;
-
     private Vault vault;
     private Profile profile;
     
@@ -36,11 +35,6 @@ public class App extends Application {
 //        vault = new Vault(dropbox);
         vault = new Vault(freddy);
         profile = vault.getDefaultProfile();
-        
-        reloadSvc = new ReloadSceneCssService();
-        reloadSvc.setDelay(Duration.seconds(2));
-        reloadSvc.setPeriod(Duration.seconds(1));
-        reloadSvc.start();
     }
     
     @Override
@@ -53,7 +47,13 @@ public class App extends Application {
         
         var scene = new Scene(stack, 1024, 768);
         scene.fillProperty().set(Color.web("#121212"));
-        reloadSvc.addSceneCss(scene, "app.css");
+        scene.getStylesheets().add("app.css");
+        scene.setOnKeyPressed((ev) -> {
+           if (ev.getCode() == KeyCode.R && ev.isControlDown() && ev.isShiftDown()) {
+               scene.getStylesheets().remove("app.css");
+               scene.getStylesheets().add("app.css");
+           }
+        });
         
         stack.setPrefSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         stack.getChildren().add(lockedPane);

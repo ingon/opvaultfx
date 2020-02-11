@@ -16,6 +16,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -26,10 +28,8 @@ import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -55,19 +55,11 @@ public class ListPane extends VBox {
     private final SortedList<ItemWithOverview> sortedItems = new SortedList<ItemWithOverview>(allItems, titleComparator);
     private final FilteredList<ItemWithOverview> visibleItems = new FilteredList<ItemWithOverview>(sortedItems, ALL_PREDICATE);
     
-    private TextField search;
+    private StringProperty search = new SimpleStringProperty(this, "search");
     private ListView<ItemWithOverview> list;
     
     public ListPane() {
         setId("list");
-        
-        search = new TextField();
-        search.setId("list-search");
-        
-        var searchWrap = new BorderPane(search);
-        searchWrap.setId("list-search-wrap");
-        
-        getChildren().add(searchWrap);
         
         list = new ListView<ItemWithOverview>(visibleItems);
         list.setId("list-items");
@@ -75,14 +67,13 @@ public class ListPane extends VBox {
         setVgrow(list, Priority.ALWAYS);
         getChildren().add(list);
         
-        search.setOnKeyTyped((e) -> {
-            var text = search.getText();
-            if (text.isBlank()) {
+        search.addListener((source, oldValue, newValue) -> {
+            if (newValue.isBlank()) {
                 visibleItems.setPredicate(ALL_PREDICATE);
             } else {
                 visibleItems.setPredicate((i) -> {
                     var t = i.overview.getTitle();
-                    return t != null && t.toLowerCase().contains(text.toLowerCase());
+                    return t != null && !i.item.isTrashed() && t.toLowerCase().contains(newValue.toLowerCase());
                 });
             }
             if (!visibleItems.isEmpty()) {
@@ -110,6 +101,10 @@ public class ListPane extends VBox {
         }
         
         this.list.getSelectionModel().select(this.visibleItems.get(0));
+    }
+    
+    public StringProperty searchProperty() {
+        return search;
     }
     
     public ItemWithOverview getItem() {

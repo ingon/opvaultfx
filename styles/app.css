@@ -1,6 +1,4 @@
 .root {
-	app-bg: #121212;
-	app-bg-surface: #121212;
 	app-bg-primary: #90caf9;
 	app-bg-primary-light: #c3fdff;
 	app-bg-primary-dark: #5d99c6;
@@ -9,11 +7,45 @@
 	app-bg-secondary-dark: #caae53;
 	app-bg-error: cf6679;
 	
-	app-fg: #ffffff;
-	app-fg-surface: #ffffff;
+	app-bg: #121212;
+	app-bg-surface: #121212;
+	
+/*	app-bg-surface-dp1: rgba(255, 255, 255, 0.05);
+	app-bg-surface-dp2: rgba(255, 255, 255, 0.07);
+	app-bg-surface-dp3: rgba(255, 255, 255, 0.08);
+	app-bg-surface-dp4: rgba(255, 255, 255, 0.09);
+	app-bg-surface-dp6: rgba(255, 255, 255, 0.11);
+	app-bg-surface-dp8: rgba(255, 255, 255, 0.12);
+	app-bg-surface-dp12: rgba(255, 255, 255, 0.14);
+	app-bg-surface-dp16: rgba(255, 255, 255, 0.15);
+	app-bg-surface-dp24: rgba(255, 255, 255, 0.16);*/
+	
+	app-bg-surface-dp1: #1d1d1d;
+	app-bg-surface-dp2: #212121;
+	app-bg-surface-dp3: #242424;
+	app-bg-surface-dp4: #272727;
+	app-bg-surface-dp6: #2c2c2c;
+	app-bg-surface-dp8: #2d2d2d;
+	app-bg-surface-dp12: #323232;
+	app-bg-surface-dp16: #353535;
+	app-bg-surface-dp24: #373737;
+	
+	app-bg-shadow-dp2: dropshadow(gaussian, black, 2, 0, 0, 1);
+	app-bg-shadow-dp4: dropshadow(gaussian, black, 4, 0, 0, 2);
+	app-bg-shadow-dp6: dropshadow(gaussian, black, 6, 0, 0, 3);
+	app-bg-shadow-dp8: dropshadow(gaussian, black, 8, 0, 0, 4);
+	app-bg-shadow-dp12: dropshadow(gaussian, black, 12, 0, 0, 6);
+	app-bg-shadow-dp24: dropshadow(gaussian, black, 24, 0, 0, 12);
+	
 	app-fg-primary: #000000;
 	app-fg-secondary: #000000;
 	app-fg-error: #000000;
+	
+	app-fg: #ffffff;
+	app-fg-surface: #ffffff;
+	app-fg-high: rgba(255, 255, 255, 0.87);
+	app-fg-medium: rgba(255, 255, 255, 0.6);
+	app-fg-disabled: rgba(255, 255, 255, 0.38);
 }
 
 .root {
@@ -28,7 +60,7 @@
 }
 
 .scroll-pane, .scroll-pane .viewport {
-	-fx-background-color: app-bg;
+	-fx-background-color: app-bg-surface;
 	-fx-padding: 0px;	
 }
 
@@ -58,16 +90,18 @@
 	-fx-spacing: 8px;
 	-fx-alignment: center;
 	-fx-fill-width: false;
+	-fx-background-color: app-bg;
+	-fx-padding: 16px;
 }
 
 #locked-password {
 	-fx-spacing: 8px;
 	-fx-alignment: center;
 	-fx-fill-height: false;
-	-fx-background-color: derive(app-bg, 20%);
+	-fx-background-color: app-bg-surface-dp4;
 	-fx-background-radius: 8px;
 	-fx-padding: 16px;
-	-fx-effect: dropshadow(gaussian, black, 8, 0, 0, 0);
+	-fx-effect: app-bg-shadow-dp6;
 	-fx-border-color: app-bg;
 	-fx-border-radius: 8px;
 }
@@ -75,7 +109,7 @@
 #locked-unlock {
 	-fx-alignment: center;
 	-fx-text-alignment: center;
-	-fx-effect: dropshadow(gaussian, black, 8, 0, 0, 0);
+	-fx-effect: app-bg-shadow-dp4;
 	-fx-text-fill: app-bg;
 	-fx-background-color: app-bg-primary;
 	-fx-font-weight: bold;
@@ -89,32 +123,49 @@
 	-fx-background-color: app-bg;
 }
 
-#unlocked .split-pane-divider {
+#unlocked-split {
+	-fx-padding: 0;
+}
+
+#unlocked-split .split-pane-divider {
 	-fx-border-color: app-bg;
 	-fx-margin: 0px;
 	-fx-padding: 0px;
 }
 
-#list-search {
-	-fx-background-color: derive(app-bg, 20%);
+#header {
+	-fx-padding: 1em;
+}
+
+#header-search {
+	-fx-pref-column-count: 24;
+	-fx-background-color: app-bg-surface-dp3;
 	-fx-text-fill: app-fg;
 	-fx-highlight-fill: app-bg-primary;
 	-fx-highlight-text-fill: app-bg;
-	-fx-effect: dropshadow(gaussian, black, 8, 0, 0, 0);
+	-fx-effect: app-bg-shadow-dp4;
 }
 
-#list-search-wrap {
-	-fx-padding: 8px 8px 12px 8px;
+#header-lock {
+	-fx-alignment: center;
+	-fx-text-alignment: center;
+	-fx-effect: app-bg-shadow-dp4;
+	-fx-text-fill: app-bg;
+	-fx-background-color: app-bg-primary;
+	-fx-font-weight: bold;
+}
+
+#list {
+	-fx-background-color: app-bg-surface;
 }
 
 #list .list-view {
+	-fx-background-color: app-bg-surface;
 	-fx-padding: 0px;
-	-fx-background-color: derive(app-bg-surface, 10%);
 }
 
 #list .list-cell {
-	-fx-background-color: derive(app-bg-surface, 10%);
-	-fx-text-fill: app-fg-surface;
+	-fx-background-color: app-bg-surface;
 }
 
 #list .item-list-cell-grid {
@@ -123,24 +174,24 @@
 }
 
 #list .list-cell:selected {
-	-fx-background-color: app-bg-primary;
+	-fx-background-color: app-bg-surface-dp12;
 }
 
-.item-list-cell-title {
+#list .item-list-cell-title {
+	-fx-text-fill: app-fg-high;
 	-fx-font-weight: bold;
 }
 
 #list .list-cell:selected .item-list-cell-title {
-	-fx-text-fill: app-fg-primary;
+	-fx-text-fill: app-fg-surface;
 }
 
-.item-list-cell-detail {
+#list .item-list-cell-detail {
 	-fx-font-size: 13pt;
-	-fx-font-weight: lighter;
+	-fx-text-fill: app-fg-medium;
 }
 
 #list .list-cell:selected .item-list-cell-detail {
-	-fx-text-fill: app-fg-primary;
 }
 
 #list .item-list-cell-icon {
@@ -149,6 +200,26 @@
 
 #list .list-cell:selected .item-list-cell-icon  {
 } 
+
+#details {
+	-fx-background-color: app-bg-surface;
+}
+
+#details-header {
+	-fx-background-color: app-bg-surface;
+	-fx-padding: 1em 0.5em 0.5em 0.5em;
+	-fx-hgap: 0.5em;
+	-fx-vgap: 0.5em;
+}
+
+#details-header-title {
+	-fx-font-weight: bold;
+	-fx-font-size: 1.2em;
+}
+
+#details-header-subtitle {
+	-fx-text-fill: derive(app-fg, -30%);
+}
 
 .item-detail-box {
 	-fx-padding: 1em;
@@ -162,35 +233,28 @@
 .item-section, .item-fields {
 	-fx-spacing: 0.3em;
 	-fx-padding: 1em;
-	-fx-background-color: derive(app-bg, 10%);
+	-fx-background-color: app-bg-surface-dp1;
 	-fx-background-radius: 8px;
-	-fx-effect: dropshadow(gaussian, black, 8, 0, 0, 0);
+	-fx-effect: app-bg-shadow-dp2;
 }
 
 .item-section-header {
 	-fx-font-weight: bold;
 	-fx-padding: 0 0 0.5em 0;
+	-fx-text-fill: app-fg-high;
 }
 
-.item-section-field-header {
+.item-field-header, .item-section-field-header {
+	-fx-padding: 0.5em 0 0 0.5em;
+	-fx-text-fill: app-fg-medium;
 	-fx-font-size: 13pt;
 }
 
-#details {
-}
-
-#details-header {
-	-fx-background-color: derive(app-bg, 10%);
-	-fx-padding: 1em 0.5em 0.5em 0.5em;
-	-fx-hgap: 0.5em;
-	-fx-vgap: 0.5em;
-}
-
-#details-header-title {
-	-fx-font-weight: bold;
-	-fx-font-size: 1.2em;
-}
-
-#details-header-subtitle {
-	-fx-text-fill: derive(app-fg, -30%);
+.item-fields .text-field, .item-section .text-field {
+	-fx-padding: 0.5em;
+	-fx-background-color: app-bg-surface-dp4;
+	-fx-text-fill: app-fg-high;
+	-fx-highlight-fill: app-bg-primary;
+	-fx-highlight-text-fill: app-bg;
+	-fx-effect: app-bg-shadow-dp2;
 }
