@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 
 public class ItemURLsPane extends VBox {
     public ItemURLsPane(ObservableValue<ItemOverview> observable) {
-        getStyleClass().add("item-fields");
+        getStyleClass().add("item-section");
 
         observable.addListener((__, ___, overview) -> {
             getChildren().clear();
@@ -23,7 +23,7 @@ public class ItemURLsPane extends VBox {
             
             if (overview.getUrl() != null) {
                 var lbl = new Label("website");
-                lbl.getStyleClass().add("item-field-header");
+                lbl.getStyleClass().add("item-section-field-header");
                 getChildren().add(lbl);
                 
                 var txt = new TextField();
@@ -54,7 +54,7 @@ public class ItemURLsPane extends VBox {
                 }
                 
                 var lbl = new Label(name);
-                lbl.getStyleClass().add("item-field-header");
+                lbl.getStyleClass().add("item-section-field-header");
                 getChildren().add(lbl);
                 
                 var txt = new TextField();

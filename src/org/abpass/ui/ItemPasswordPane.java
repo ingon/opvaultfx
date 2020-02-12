@@ -7,7 +7,7 @@ import javafx.scene.layout.VBox;
 
 public class ItemPasswordPane extends VBox {
     public ItemPasswordPane(ObservableValue<ItemDetail> observableDetail) {
-        getStyleClass().add("item-fields");
+        getStyleClass().add("item-section");
         
         observableDetail.addListener((__, ___, detail) -> {
             getChildren().clear();

@@ -18,7 +18,7 @@ public class ItemSectionPane extends VBox {
         }
         if (title != null && !title.isBlank()) {
             var titleLbl = new Label(title);
-            titleLbl.getStyleClass().add("item-section-header");
+            titleLbl.getStyleClass().add("item-section-title");
             getChildren().add(titleLbl);
         }
         

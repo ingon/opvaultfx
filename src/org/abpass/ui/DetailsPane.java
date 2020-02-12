@@ -40,6 +40,7 @@ public class DetailsPane extends VBox {
     private final Label subtitle = new Label();
     
     private final VBox detailBox = new VBox();
+    private final ScrollPane detailScroll = new ScrollPane(detailBox);
     private final ItemPasswordPane passwordPane = new ItemPasswordPane(detail);
     private final ItemFieldsPane fieldsPane = new ItemFieldsPane(fields);
     private final ItemNotesPane notesPane = new ItemNotesPane(detail);
@@ -67,7 +68,6 @@ public class DetailsPane extends VBox {
         detailBox.setId("details-data");
         detailBox.getChildren().addAll(passwordPane, fieldsPane, sectionsPane, notesPane, urlsPane, attachmentsPane);
         
-        var detailScroll = new ScrollPane(detailBox);
         detailScroll.setFitToWidth(true);
         getChildren().add(detailScroll);
     }
@@ -124,5 +124,7 @@ public class DetailsPane extends VBox {
         if (overview.getUrl() != null || (overview.getUrls() != null && !overview.getUrls().isEmpty())) {
             detailBox.getChildren().add(urlsPane);
         }
+        
+        detailScroll.setVvalue(0);
     }
 }

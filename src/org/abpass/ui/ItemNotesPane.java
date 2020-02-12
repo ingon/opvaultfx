@@ -10,7 +10,7 @@ public class ItemNotesPane extends VBox {
     private final TextArea text = new TextArea();
     
     public ItemNotesPane(ObservableValue<ItemDetail> observableDetail) {
-        getStyleClass().add("item-fields");
+        getStyleClass().add("item-section");
         
         text.setEditable(false);
         

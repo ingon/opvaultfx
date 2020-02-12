@@ -252,7 +252,7 @@
 	-fx-spacing: 1em;
 }
 
-.item-section, .item-fields, .item-attachments {
+.item-section, .item-attachments {
 	-fx-spacing: 0.3em;
 	-fx-padding: 1em;
 	-fx-background-color: app-bg-surface-dp2;
@@ -260,19 +260,19 @@
 	-fx-effect: app-bg-shadow-dp2;
 }
 
-.item-section-header {
+.item-section-title {
 	-fx-font-weight: bold;
 	-fx-padding: 0 0 0.5em 0;
 	-fx-text-fill: app-fg-high;
 }
 
-.item-field-header, .item-section-field-header {
+.item-section-field-header {
 	-fx-padding: 0.5em 0 0 0.5em;
 	-fx-text-fill: app-fg-medium;
 	-fx-font-size: 13pt;
 }
 
-.item-fields .text-field, .item-section .text-field, .item-attachment-text {
+.item-section .text-field, .item-attachment-text {
 	-fx-font-weight: bolder;
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-text-fill: app-fg-high;
@@ -282,8 +282,7 @@
 	-fx-padding: 0.5em;
 }
 
-.item-fields .text-area {
-	-fx-font-weight: bolder;
+.item-section .text-area {
 	-fx-wrap-text: true;
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-effect: app-bg-shadow-dp2;
@@ -292,7 +291,7 @@
 	-fx-highlight-text-fill: app-bg;
 }
 
-.item-fields .text-area .content {
+.item-section .text-area .content {
 	-fx-background-color: app-bg-surface-dp4;
 }
 

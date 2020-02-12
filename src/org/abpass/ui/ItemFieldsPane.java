@@ -11,14 +11,14 @@ import javafx.scene.layout.VBox;
 
 public class ItemFieldsPane extends VBox {
     public ItemFieldsPane(ObservableListValue<ItemField> fields) {
-        getStyleClass().add("item-fields");
+        getStyleClass().add("item-section");
 
         fields.addListener((__, ___, newValue) -> {
             getChildren().clear();
 
             for (var f : newValue) {
                 var lbl = new Label(f.getName());
-                lbl.getStyleClass().add("item-field-header");
+                lbl.getStyleClass().add("item-section-field-header");
                 getChildren().add(lbl);
 
                 if (f.getDesignation() == Designation.Password || f.getType() == Type.Password) {
