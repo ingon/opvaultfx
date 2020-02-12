@@ -10,10 +10,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 public class ItemURLsPane extends VBox {
-    public ItemURLsPane(ObservableValue<ItemOverview> observable) {
+    public ItemURLsPane(ObservableValue<ItemOverview> observableOverview) {
         getStyleClass().add("item-section");
 
-        observable.addListener((__, ___, overview) -> {
+        observableOverview.addListener((__, ___, overview) -> {
             getChildren().clear();
             if (overview == null) {
                 return;

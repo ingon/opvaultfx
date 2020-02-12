@@ -10,13 +10,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 public class ItemFieldsPane extends VBox {
-    public ItemFieldsPane(ObservableListValue<ItemField> fields) {
+    public ItemFieldsPane(ObservableListValue<ItemField> observableFields) {
         getStyleClass().add("item-section");
 
-        fields.addListener((__, ___, newValue) -> {
+        observableFields.addListener((__, ___, fields) -> {
             getChildren().clear();
 
-            for (var f : newValue) {
+            for (var f : fields) {
                 var lbl = new Label(f.getName());
                 lbl.getStyleClass().add("item-section-field-header");
                 getChildren().add(lbl);

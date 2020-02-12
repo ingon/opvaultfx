@@ -6,13 +6,13 @@ import javafx.beans.value.ObservableListValue;
 import javafx.scene.layout.VBox;
 
 public class ItemSectionsPane extends VBox {
-    public ItemSectionsPane(ObservableListValue<ItemSection> sections) {
+    public ItemSectionsPane(ObservableListValue<ItemSection> observableSections) {
         getStyleClass().add("item-sections");
 
-        sections.addListener((__, ___, newValue) -> {
+        observableSections.addListener((__, ___, sections) -> {
             getChildren().clear();
 
-            for (var s : newValue) {
+            for (var s : sections) {
                 getChildren().add(new ItemSectionPane(s));
             }
         });
