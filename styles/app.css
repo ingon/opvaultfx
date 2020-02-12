@@ -6,11 +6,9 @@
 	app-bg-secondary-light: #ffffb3;
 	app-bg-secondary-dark: #caae53;
 	app-bg-error: cf6679;
-	
 	app-bg: #121212;
 	app-bg-surface: #121212;
-	
-/*	app-bg-surface-dp1: rgba(255, 255, 255, 0.05);
+	/*	app-bg-surface-dp1: rgba(255, 255, 255, 0.05);
 	app-bg-surface-dp2: rgba(255, 255, 255, 0.07);
 	app-bg-surface-dp3: rgba(255, 255, 255, 0.08);
 	app-bg-surface-dp4: rgba(255, 255, 255, 0.09);
@@ -19,7 +17,6 @@
 	app-bg-surface-dp12: rgba(255, 255, 255, 0.14);
 	app-bg-surface-dp16: rgba(255, 255, 255, 0.15);
 	app-bg-surface-dp24: rgba(255, 255, 255, 0.16);*/
-	
 	app-bg-surface-dp1: #1d1d1d;
 	app-bg-surface-dp2: #212121;
 	app-bg-surface-dp3: #242424;
@@ -40,8 +37,8 @@
 	app-fg-primary: #000000;
 	app-fg-secondary: #000000;
 	app-fg-error: #000000;
-	
 	app-fg: #ffffff;
+	
 	app-fg-surface: #ffffff;
 	app-fg-high: rgba(255, 255, 255, 0.87);
 	app-fg-medium: rgba(255, 255, 255, 0.6);
@@ -52,7 +49,7 @@
 	-fx-font-family: sans-serif;
 	-fx-font-size: 14pt;
 	-fx-padding: 0px;
-	-fx-background-color: app-bg;	
+	-fx-background-color: app-bg;
 }
 
 .label {
@@ -61,24 +58,41 @@
 
 .scroll-pane, .scroll-pane .viewport {
 	-fx-background-color: app-bg-surface;
-	-fx-padding: 0px;	
+	-fx-padding: 0px;
 }
 
-.scroll-bar, .list-view .scroll-bar {
+.scroll-bar {
 	-fx-background-color: app-bg-surface;
 }
 
-.scroll-bar .track, .list-view .scroll-bar .track {
+.list-view .scroll-bar {
+	-fx-background-color: app-bg-surface-dp2;
+}
+
+.scroll-bar .track {
 	-fx-background-color: app-bg-surface;
 }
 
-.scroll-bar .thumb, .list-view .scroll-bar .thumb {
-	-fx-background-color: derive(app-bg, 10%);
+.list-view .scroll-bar .track {
+	-fx-background-color: app-bg-surface-dp2;
 }
 
-.scroll-bar .decrement-button:hover, .scroll-bar .increment-button:hover, 
+.scroll-bar .thumb {
+	-fx-background-color: app-bg-surface-dp2;
+	-fx-effect: app-bg-shadow-dp2;
+}
+
+.list-view .scroll-bar .thumb {
+	-fx-background-color: app-bg-surface-dp6;
+	-fx-effect: app-bg-shadow-dp2;
+}
+
+.scroll-bar .decrement-button:hover, .scroll-bar .increment-button:hover {
+	-fx-background-color: app-bg-surface-dp3;
+}
+
 .list-view .scroll-bar .decrement-button:hover, .list-view .scroll-bar .increment-button:hover {
-	-fx-background-color: derive(app-bg, 10%);
+	-fx-background-color: app-bg-surface-dp6;
 }
 
 #locked {
@@ -128,7 +142,7 @@
 }
 
 #unlocked-split .split-pane-divider {
-	-fx-border-color: app-bg;
+	-fx-border-color: app-bg-surface-dp2;
 	-fx-margin: 0px;
 	-fx-padding: 0px;
 }
@@ -156,17 +170,13 @@
 	-fx-font-weight: bold;
 }
 
-#list {
-	-fx-background-color: app-bg-surface;
-}
-
 #list .list-view {
-	-fx-background-color: app-bg-surface;
+	-fx-background-color: app-bg-surface-dp2;
 	-fx-padding: 0px;
 }
 
 #list .list-cell {
-	-fx-background-color: app-bg-surface;
+	-fx-background-color: app-bg-surface-dp2;
 }
 
 #list .item-list-cell-grid {
@@ -180,7 +190,7 @@
 }
 
 #list .list-cell:hover {
-	-fx-background-color: app-bg-surface-dp4;
+	-fx-background-color: app-bg-surface-dp6;
 }
 
 #list .item-list-cell-title {
@@ -198,14 +208,16 @@
 }
 
 #list .list-cell:selected .item-list-cell-detail {
+	
 }
 
 #list .item-list-cell-icon {
 	-fx-opacity: 0.7;
-} 
+}
 
-#list .list-cell:selected .item-list-cell-icon  {
-} 
+#list .list-cell:selected .item-list-cell-icon {
+	
+}
 
 #details {
 	-fx-background-color: app-bg-surface;
@@ -240,7 +252,7 @@
 	-fx-spacing: 1em;
 }
 
-.item-section, .item-fields {
+.item-section, .item-fields, .item-attachments {
 	-fx-spacing: 0.3em;
 	-fx-padding: 1em;
 	-fx-background-color: app-bg-surface-dp1;
@@ -260,7 +272,7 @@
 	-fx-font-size: 13pt;
 }
 
-.item-fields .text-field, .item-section .text-field {
+.item-fields .text-field, .item-section .text-field, .item-attachment-text {
 	-fx-font-weight: bolder;
 	-fx-padding: 0.5em;
 	-fx-background-color: app-bg-surface-dp4;
@@ -268,6 +280,7 @@
 	-fx-highlight-fill: app-bg-primary;
 	-fx-highlight-text-fill: app-bg;
 	-fx-effect: app-bg-shadow-dp2;
+	-fx-padding: 0.5em;
 }
 
 .item-section .progress-indicator {
@@ -283,6 +296,36 @@
 .item-section .progress-indicator .percentage {
 	-fx-fill: null;
 }
+
 .item-section .progress-indicator .tick {
 	-fx-background-color: app-bg-primary;
+}
+
+.item-attachment-row {
+	-fx-spacing: 0.5em;
+	-fx-alignment: center-left;
+	-fx-padding: 0.5em 0 0 0;
+}
+
+.item-attachment-btn {
+	-fx-alignment: center;
+	-fx-text-alignment: center;
+	-fx-effect: app-bg-shadow-dp2;
+	-fx-text-fill: app-bg;
+	-fx-background-color: app-bg-primary;
+	-fx-font-weight: bold;
+}
+
+.password-pane {
+	-fx-spacing: 0.5em;
+	-fx-alignment: center;
+}
+
+.password-copy {
+	-fx-alignment: center;
+	-fx-text-alignment: center;
+	-fx-effect: app-bg-shadow-dp2;
+	-fx-text-fill: app-bg;
+	-fx-background-color: app-bg-primary;
+	-fx-font-weight: bold;
 }

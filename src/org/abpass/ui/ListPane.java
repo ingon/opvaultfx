@@ -62,6 +62,7 @@ public class ListPane extends VBox {
         list = new ListView<ItemWithOverview>(visibleItems);
         list.setId("list-items");
         list.setCellFactory((view) -> new ItemListCell());
+        list.setPlaceholder(new Label("Nothing found"));
         setVgrow(list, Priority.ALWAYS);
         getChildren().add(list);
         

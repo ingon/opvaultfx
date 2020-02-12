@@ -1,6 +1,7 @@
 package org.abpass.ui;
 
 import org.abpass.opvault.Item;
+import org.abpass.opvault.Item.Category;
 import org.abpass.opvault.ItemAttachment;
 import org.abpass.opvault.ItemDetail;
 import org.abpass.opvault.ItemException;
@@ -76,6 +77,7 @@ public class DetailsPane extends VBox {
         if (item == null) {
             icon.setImage(null);
             title.setText("");
+            subtitle.setText("");
             detail.setValue(null);
             
             fields.clear();
@@ -96,12 +98,20 @@ public class DetailsPane extends VBox {
         attachments.setAll(item.getAttachments());
         
         detailBox.getChildren().clear();
+        if (item.getCategory() == Category.Password) {
+            var pbox = new VBox(new PasswordPane(detail.getValue().getPassword()));
+            pbox.getStyleClass().add("item-fields");
+            detailBox.getChildren().add(pbox);
+        }
+        
         if (! fields.isEmpty()) {
             detailBox.getChildren().add(fieldsPane);
         }
+        
         if (! sections.isEmpty()) {
             detailBox.getChildren().add(sectionsPane);
         }
+        
         if (! attachments.isEmpty()) {
             detailBox.getChildren().add(attachmentsPane);
         }
