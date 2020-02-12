@@ -215,7 +215,10 @@
 	-fx-background-color: app-bg-surface;
 	-fx-padding: 1em 1em 0.5em 1em;
 	-fx-hgap: 1em;
-//	-fx-vgap: 0.3em;
+}
+
+#details-header-icon {
+	-fx-opacity: 0.7;
 }
 
 #details-header-title {
@@ -265,4 +268,21 @@
 	-fx-highlight-fill: app-bg-primary;
 	-fx-highlight-text-fill: app-bg;
 	-fx-effect: app-bg-shadow-dp2;
+}
+
+.item-section .progress-indicator {
+	-fx-progress-color: app-bg-primary;
+	-fx-padding: 0 0 -1em 0;
+}
+
+.item-section .progress-indicator .indicator {
+	-fx-background-color: app-bg-surface-dp4;
+	-fx-effect: app-bg-shadow-dp2;
+}
+
+.item-section .progress-indicator .percentage {
+	-fx-fill: null;
+}
+.item-section .progress-indicator .tick {
+	-fx-background-color: app-bg-primary;
 }
