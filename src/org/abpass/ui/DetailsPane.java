@@ -1,7 +1,6 @@
 package org.abpass.ui;
 
 import org.abpass.opvault.Item;
-import org.abpass.opvault.Item.Category;
 import org.abpass.opvault.ItemAttachment;
 import org.abpass.opvault.ItemDetail;
 import org.abpass.opvault.ItemException;
@@ -41,9 +40,12 @@ public class DetailsPane extends VBox {
     private final Label subtitle = new Label();
     
     private final VBox detailBox = new VBox();
+    private final ItemPasswordPane passwordPane = new ItemPasswordPane(detail);
     private final ItemFieldsPane fieldsPane = new ItemFieldsPane(fields);
-    private final ItemAttachmentsPane attachmentsPane = new ItemAttachmentsPane(attachments);
+    private final ItemNotesPane notesPane = new ItemNotesPane(detail);
     private final ItemSectionsPane sectionsPane = new ItemSectionsPane(sections);
+    private final ItemURLsPane urlsPane = new ItemURLsPane(overview);
+    private final ItemAttachmentsPane attachmentsPane = new ItemAttachmentsPane(attachments);
     
     public DetailsPane() {
         setId("details");
@@ -63,7 +65,7 @@ public class DetailsPane extends VBox {
         headerGrid.add(subtitle, 1, 1, 1, 1);
 
         detailBox.setId("details-data");
-        detailBox.getChildren().addAll(fieldsPane, sectionsPane, attachmentsPane);
+        detailBox.getChildren().addAll(passwordPane, fieldsPane, sectionsPane, notesPane, urlsPane, attachmentsPane);
         
         var detailScroll = new ScrollPane(detailBox);
         detailScroll.setFitToWidth(true);
@@ -98,10 +100,9 @@ public class DetailsPane extends VBox {
         attachments.setAll(item.getAttachments());
         
         detailBox.getChildren().clear();
-        if (item.getCategory() == Category.Password) {
-            var pbox = new VBox(new PasswordPane(detail.getValue().getPassword()));
-            pbox.getStyleClass().add("item-fields");
-            detailBox.getChildren().add(pbox);
+        
+        if (detail.getValue().getPassword() != null) {
+            detailBox.getChildren().add(passwordPane);
         }
         
         if (! fields.isEmpty()) {
@@ -112,8 +113,16 @@ public class DetailsPane extends VBox {
             detailBox.getChildren().add(sectionsPane);
         }
         
+        if (detail.getValue().getNotes() != null) {
+            detailBox.getChildren().add(notesPane);
+        }
+        
         if (! attachments.isEmpty()) {
             detailBox.getChildren().add(attachmentsPane);
+        }
+        
+        if (overview.getUrl() != null || (overview.getUrls() != null && !overview.getUrls().isEmpty())) {
+            detailBox.getChildren().add(urlsPane);
         }
     }
 }

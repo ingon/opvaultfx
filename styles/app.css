@@ -255,7 +255,7 @@
 .item-section, .item-fields, .item-attachments {
 	-fx-spacing: 0.3em;
 	-fx-padding: 1em;
-	-fx-background-color: app-bg-surface-dp1;
+	-fx-background-color: app-bg-surface-dp2;
 	-fx-background-radius: 8px;
 	-fx-effect: app-bg-shadow-dp2;
 }
@@ -274,13 +274,26 @@
 
 .item-fields .text-field, .item-section .text-field, .item-attachment-text {
 	-fx-font-weight: bolder;
-	-fx-padding: 0.5em;
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-text-fill: app-fg-high;
 	-fx-highlight-fill: app-bg-primary;
 	-fx-highlight-text-fill: app-bg;
 	-fx-effect: app-bg-shadow-dp2;
 	-fx-padding: 0.5em;
+}
+
+.item-fields .text-area {
+	-fx-font-weight: bolder;
+	-fx-wrap-text: true;
+	-fx-background-color: app-bg-surface-dp4;
+	-fx-effect: app-bg-shadow-dp2;
+	-fx-text-fill: app-fg-high;
+	-fx-highlight-fill: app-bg-primary;
+	-fx-highlight-text-fill: app-bg;
+}
+
+.item-fields .text-area .content {
+	-fx-background-color: app-bg-surface-dp4;
 }
 
 .item-section .progress-indicator {
