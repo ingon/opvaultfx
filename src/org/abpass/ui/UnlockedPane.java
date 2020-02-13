@@ -9,8 +9,6 @@ import org.abpass.opvault.ProfileException.ProfileLockedException;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 
@@ -20,8 +18,6 @@ public class UnlockedPane extends BorderPane {
     private final SplitPane split = new SplitPane();
     private final ListPane list = new ListPane();
     private final DetailsPane details = new DetailsPane();
-    
-    private ObjectProperty<Profile> profile = new SimpleObjectProperty<Profile>(this, "profile");
     
     public UnlockedPane() throws IOException {
         setId("unlocked");
@@ -45,7 +41,7 @@ public class UnlockedPane extends BorderPane {
                     if (item == null) {
                         details.showItem(null, null);
                     } else {
-                        details.showItem(item.item, item.overview);
+                        details.showItem(item.getItem(), item.getOverview());
                     }
                 } catch (ProfileLockedException e) {
                     e.printStackTrace();
@@ -57,8 +53,10 @@ public class UnlockedPane extends BorderPane {
     }
     
     public void setProfile(Profile profile) throws ProfileException, ItemException {
-        this.profile.setValue(profile);
-        
         this.list.showProfile(profile);
+    }
+    
+    public void clearProfile() {
+        this.list.clearProfile();
     }
 }

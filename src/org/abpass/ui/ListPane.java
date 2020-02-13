@@ -3,6 +3,7 @@ package org.abpass.ui;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
+import org.abpass.opvault.Item;
 import org.abpass.opvault.Item.Category;
 import org.abpass.opvault.ItemException;
 import org.abpass.opvault.ItemOverview;
@@ -17,8 +18,6 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -40,7 +39,8 @@ public class ListPane extends VBox {
     private static final Comparator<ItemWithOverview> _NULL_SAFE_ITEM = 
             Comparator.nullsFirst(Comparator.comparing((o) -> o.overview, _NULL_SAFE_OVERVIEW)); 
     
-    private static final Predicate<ItemWithOverview> ALL_PREDICATE = (i) -> i.item.getCategory() != Category.Tombstone;
+    private static final Predicate<ItemWithOverview> ALL_PREDICATE = 
+            (i) -> i.item != null && i.item.getCategory() != Category.Tombstone;
     
     private final ListProperty<ItemWithOverview> allItems = 
             new SimpleListProperty<ItemWithOverview>(this, "allItems", FXCollections.observableArrayList());
@@ -50,48 +50,48 @@ public class ListPane extends VBox {
     
     private final Comparator<ItemWithOverview> titleComparator = _NULL_SAFE_ITEM;
     
-    private final SortedList<ItemWithOverview> sortedItems = new SortedList<ItemWithOverview>(allItems, titleComparator);
-    private final FilteredList<ItemWithOverview> visibleItems = new FilteredList<ItemWithOverview>(sortedItems, ALL_PREDICATE);
+    private final SortedList<ItemWithOverview> sortedItems = 
+            new SortedList<ItemWithOverview>(allItems, titleComparator);
+    private final FilteredList<ItemWithOverview> visibleItems = 
+            new FilteredList<ItemWithOverview>(sortedItems, ALL_PREDICATE);
     
-    private StringProperty search = new SimpleStringProperty(this, "search");
-    private ListView<ItemWithOverview> list;
+    private final StringProperty search = new SimpleStringProperty(this, "search");
+    private final ListView<ItemWithOverview> list = new ListView<ItemWithOverview>(visibleItems);
     
     public ListPane() {
         setId("list");
         
-        list = new ListView<ItemWithOverview>(visibleItems);
         list.setId("list-items");
         list.setCellFactory((view) -> new ItemListCell());
         list.setPlaceholder(new Label("Nothing found"));
         setVgrow(list, Priority.ALWAYS);
         getChildren().add(list);
         
-        search.addListener((source, oldValue, newValue) -> {
-            if (newValue.isBlank()) {
+        search.addListener((__, ___, value) -> {
+            if (value.isBlank()) {
                 visibleItems.setPredicate(ALL_PREDICATE);
             } else {
+                var pattern = value.toLowerCase();
                 visibleItems.setPredicate((i) -> {
                     var t = i.overview.getTitle();
-                    return t != null && !i.item.isTrashed() && t.toLowerCase().contains(newValue.toLowerCase());
+                    return t != null && !i.item.isTrashed() && t.toLowerCase().contains(pattern);
                 });
             }
+            
             if (!visibleItems.isEmpty()) {
                 list.getSelectionModel().select(visibleItems.get(0));
             }
         });
         
-        list.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ItemWithOverview>() {
-            @Override
-            public void changed(ObservableValue<? extends ItemWithOverview> observable, ItemWithOverview oldValue, ItemWithOverview newValue) {
-                item.setValue(newValue);
-            }
+        list.getSelectionModel().selectedItemProperty().addListener((__, ___, value) -> {
+            item.setValue(value);
         });
     }
     
     public void showProfile(Profile profile) throws ProfileException, ItemException {
-        var items = profile.getItems();
-        
         this.allItems.clear();
+
+        var items = profile.getItems();
         try (var overviewKeys = profile.overviewKeys()) {
             for (var i : items) {
                 var overview = i.getOverview(overviewKeys);
@@ -102,6 +102,16 @@ public class ListPane extends VBox {
         this.list.getSelectionModel().select(this.visibleItems.get(0));
     }
     
+    public void clearProfile() {
+        for (var iwo : allItems) {
+            iwo.clear();
+        }
+        this.allItems.clear();
+        
+        this.item.set(null);
+        this.list.getSelectionModel().clearSelection();
+    }
+
     public StringProperty searchProperty() {
         return search;
     }
@@ -112,6 +122,29 @@ public class ListPane extends VBox {
     
     public ReadOnlyObjectProperty<ItemWithOverview> itemProperty() {
         return this.item;
+    }
+    
+    public static class ItemWithOverview {
+        private Item item;
+        private ItemOverview overview;
+        
+        public ItemWithOverview(Item item, ItemOverview overview) {
+            this.item = item;
+            this.overview = overview;
+        }
+        
+        public Item getItem() {
+            return item;
+        }
+        
+        public ItemOverview getOverview() {
+            return overview;
+        }
+        
+        public void clear() {
+            this.item = null;
+            this.overview = null;
+        }
     }
     
     private static class ItemListCell extends ListCell<ItemWithOverview> {
@@ -158,5 +191,4 @@ public class ListPane extends VBox {
             setGraphic(grid);
         }
     }
-    
 }

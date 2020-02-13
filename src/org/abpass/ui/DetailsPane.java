@@ -84,6 +84,7 @@ public class DetailsPane extends VBox {
             
             fields.clear();
             sections.clear();
+            attachments.clear();
             
             detailBox.getChildren().clear();
             

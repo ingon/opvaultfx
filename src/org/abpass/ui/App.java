@@ -5,19 +5,16 @@ import java.nio.file.Paths;
 import org.abpass.opvault.ItemException;
 import org.abpass.opvault.Profile;
 import org.abpass.opvault.ProfileException;
+import org.abpass.opvault.ProfileException.InvalidPasswordException;
 import org.abpass.opvault.Vault;
-import org.abpass.ui.util.ReloadSceneCssService;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class App extends Application {
     private Vault vault;
@@ -42,7 +39,7 @@ public class App extends Application {
         stack = new StackPane();
         stack.setMinSize(400, 300);
         
-        lockedPane = new LockedPane(this.vault, this.profile);
+        lockedPane = new LockedPane();
         unlockedPane = new UnlockedPane();
         
         var scene = new Scene(stack, 1024, 768);
@@ -58,20 +55,28 @@ public class App extends Application {
         stack.setPrefSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         stack.getChildren().add(lockedPane);
         
-        lockedPane.unlocked.addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    try {
-                        unlockedPane.setProfile(profile);
-                        stack.getChildren().set(0, unlockedPane);
-                    } catch (ProfileException e) {
-                        e.printStackTrace();
-                    } catch (ItemException e) {
-                        e.printStackTrace();
-                    }
-                }
+        scene.addEventHandler(ProfileEvent.UNLOCK, (ev) -> {
+            try {
+                profile.unlock(ev.password);
+                
+                lockedPane.reset(null);
+                
+                unlockedPane.setProfile(profile);
+                stack.getChildren().set(0, unlockedPane);
+            } catch (InvalidPasswordException e) {
+                lockedPane.reset(e.getMessage());
+            } catch (ItemException e) {
+                lockedPane.reset(e.getMessage());
+            } catch (ProfileException e) {
+                lockedPane.reset(e.getMessage());
             }
+        });
+        
+        scene.addEventHandler(ProfileEvent.LOCK, (ev) -> {
+            profile.lock();
+            stack.getChildren().set(0, lockedPane);
+            
+            unlockedPane.clearProfile();
         });
         
         primaryStage.setTitle("abpass");

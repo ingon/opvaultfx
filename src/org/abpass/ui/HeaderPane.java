@@ -22,6 +22,7 @@ public class HeaderPane extends StackPane {
         AnchorPane.setLeftAnchor(search, 0.);
         
         lock.setId("header-lock");
+        lock.setOnAction((ev) -> fireEvent(ProfileEvent.lock()));
         AnchorPane.setRightAnchor(lock, 0.);
         
         internal.getChildren().addAll(search, lock);

@@ -1,12 +1,8 @@
 package org.abpass.ui;
 
-import org.abpass.opvault.Profile;
-import org.abpass.opvault.ProfileException.InvalidPasswordException;
 import org.abpass.opvault.SecureString;
 import org.abpass.opvault.Security;
-import org.abpass.opvault.Vault;
 
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -22,16 +18,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class LockedPane extends VBox {
-    public final Vault vault;
-    public final Profile profile;
-    public final SimpleBooleanProperty unlocked = new SimpleBooleanProperty(this, "locked", false);
-    
     private final SecurePasswordField passwordFld;
     
-    public LockedPane(Vault vault, Profile profile) {
-        this.vault = vault;
-        this.profile = profile;
-        
+    public LockedPane() {
         setId("locked");
         
         VBox center = new VBox();
@@ -54,21 +43,16 @@ public class LockedPane extends VBox {
         unlockBtn.setOnAction(this::act);
     }
     
+    public void reset(String error) {
+        passwordFld.reset(error);
+    }
+    
     private void act(ActionEvent ev) {
         if (passwordFld.text == null) {
             return;
         }
         
-        try {
-            profile.unlock(passwordFld.text);
-            unlocked.setValue(true);
-        } catch (InvalidPasswordException e) {
-            passwordFld.error.set(e.getMessage());
-        } finally {
-            passwordFld.text.close();
-            passwordFld.text = null;
-            passwordFld.len.set(0);
-        }
+        fireEvent(ProfileEvent.unlock(passwordFld.text));
     }
     
     private static class SecurePasswordField extends Control {
@@ -105,6 +89,13 @@ public class LockedPane extends VBox {
                     append(data);
                 }
             });
+        }
+        
+        private void reset(String errorStr) {
+            error.set(errorStr);
+            text.close();
+            text = null;
+            len.set(0);
         }
         
         private void delete() {
