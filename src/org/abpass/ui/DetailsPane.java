@@ -72,24 +72,25 @@ public class DetailsPane extends VBox {
         getChildren().add(detailScroll);
     }
     
+    public void clearItem() {
+        item.setValue(null);
+        overview.setValue(null);
+        
+        icon.setImage(null);
+        title.setText("");
+        subtitle.setText("");
+        detail.setValue(null);
+        
+        fields.clear();
+        sections.clear();
+        attachments.clear();
+        
+        detailBox.getChildren().clear();
+    }
+    
     public void showItem(Item item, ItemOverview overview) throws ProfileLockedException, ItemException {
         this.item.setValue(item);
         this.overview.setValue(overview);
-        
-        if (item == null) {
-            icon.setImage(null);
-            title.setText("");
-            subtitle.setText("");
-            detail.setValue(null);
-            
-            fields.clear();
-            sections.clear();
-            attachments.clear();
-            
-            detailBox.getChildren().clear();
-            
-            return;
-        }
         
         icon.setImage(CategoryIcons.get(item, Size.BIG));
         title.setText(overview.getTitle());

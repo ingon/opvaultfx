@@ -1,7 +1,12 @@
 package org.abpass.ui;
 
+import java.nio.file.Paths;
+
+import org.abpass.opvault.Profile;
+import org.abpass.opvault.ProfileException;
 import org.abpass.opvault.SecureString;
 import org.abpass.opvault.Security;
+import org.abpass.opvault.Vault;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,7 +25,17 @@ import javafx.scene.text.Font;
 public class LockedPane extends VBox {
     private final SecurePasswordField passwordFld;
     
-    public LockedPane() {
+    private Vault vault;
+    private Profile profile;
+    
+    public LockedPane() throws Exception {
+        var freddy = Paths.get("/home/sungon/Downloads/freddy-2013-12-04/onepassword_data");
+        var dropbox = Paths.get(System.getProperty("user.home"), "Dropbox", "1Password.opvault");
+        
+////        vault = new Vault(dropbox);
+        vault = new Vault(freddy);
+        profile = vault.getDefaultProfile();
+        
         setId("locked");
         
         VBox center = new VBox();
@@ -43,16 +58,18 @@ public class LockedPane extends VBox {
         unlockBtn.setOnAction(this::act);
     }
     
-    public void reset(String error) {
-        passwordFld.reset(error);
-    }
-    
     private void act(ActionEvent ev) {
         if (passwordFld.text == null) {
             return;
         }
         
-        fireEvent(ProfileEvent.unlock(passwordFld.text));
+        try {
+            profile.unlock(passwordFld.text);
+            passwordFld.reset(null);
+            fireEvent(ProfileEvent.unlock(profile));
+        } catch(ProfileException e) {
+            passwordFld.reset(e.getMessage());
+        }
     }
     
     private static class SecurePasswordField extends Control {

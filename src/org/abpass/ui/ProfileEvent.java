@@ -1,6 +1,6 @@
 package org.abpass.ui;
 
-import org.abpass.opvault.SecureString;
+import org.abpass.opvault.Profile;
 
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -12,18 +12,18 @@ public class ProfileEvent extends Event {
     
     public static final EventType<ProfileEvent> LOCK = new EventType<ProfileEvent>("LOCK");
     
-    public final SecureString password; 
+    public final Profile profile;
     
-    private ProfileEvent(SecureString password, EventType<ProfileEvent> eventType) {
+    private ProfileEvent(EventType<ProfileEvent> eventType, Profile profile) {
         super(eventType);
-        this.password = password;
+        this.profile = profile;
     }
     
-    public static ProfileEvent unlock(SecureString password) {
-        return new ProfileEvent(password, UNLOCK);
+    public static ProfileEvent unlock(Profile profile) {
+        return new ProfileEvent(UNLOCK, profile);
     }
     
     public static ProfileEvent lock() {
-        return new ProfileEvent(null, LOCK);
+        return new ProfileEvent(LOCK, null);
     }
 }

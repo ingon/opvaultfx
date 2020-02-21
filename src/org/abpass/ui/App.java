@@ -1,13 +1,5 @@
 package org.abpass.ui;
 
-import java.nio.file.Paths;
-
-import org.abpass.opvault.ItemException;
-import org.abpass.opvault.Profile;
-import org.abpass.opvault.ProfileException;
-import org.abpass.opvault.ProfileException.InvalidPasswordException;
-import org.abpass.opvault.Vault;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -17,22 +9,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class App extends Application {
-    private Vault vault;
-    private Profile profile;
-    
     private StackPane stack;
     private LockedPane lockedPane;
     private UnlockedPane unlockedPane;
-    
-    @Override
-    public void init() throws Exception {
-        var freddy = Paths.get("/home/sungon/Downloads/freddy-2013-12-04/onepassword_data");
-        var dropbox = Paths.get(System.getProperty("user.home"), "Dropbox", "1Password.opvault");
-        
-//        vault = new Vault(dropbox);
-        vault = new Vault(freddy);
-        profile = vault.getDefaultProfile();
-    }
     
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -56,26 +35,12 @@ public class App extends Application {
         stack.getChildren().add(lockedPane);
         
         scene.addEventHandler(ProfileEvent.UNLOCK, (ev) -> {
-            try {
-                profile.unlock(ev.password);
-                
-                lockedPane.reset(null);
-                
-                unlockedPane.setProfile(profile);
-                stack.getChildren().set(0, unlockedPane);
-            } catch (InvalidPasswordException e) {
-                lockedPane.reset(e.getMessage());
-            } catch (ItemException e) {
-                lockedPane.reset(e.getMessage());
-            } catch (ProfileException e) {
-                lockedPane.reset(e.getMessage());
-            }
+            unlockedPane.showProfile(ev.profile);
+            stack.getChildren().set(0, unlockedPane);
         });
         
         scene.addEventHandler(ProfileEvent.LOCK, (ev) -> {
-            profile.lock();
             stack.getChildren().set(0, lockedPane);
-            
             unlockedPane.clearProfile();
         });
         

@@ -7,8 +7,6 @@ import org.abpass.opvault.Profile;
 import org.abpass.opvault.ProfileException;
 import org.abpass.opvault.ProfileException.ProfileLockedException;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 
@@ -33,30 +31,33 @@ public class UnlockedPane extends BorderPane {
         
         list.searchProperty().bind(header.searchTextProperty());
         
-        list.itemProperty().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                var item = list.getItem();
-                try {
-                    if (item == null) {
-                        details.showItem(null, null);
-                    } else {
-                        details.showItem(item.getItem(), item.getOverview());
-                    }
-                } catch (ProfileLockedException e) {
-                    e.printStackTrace();
-                } catch (ItemException e) {
-                    e.printStackTrace();
+        list.itemProperty().addListener((__, ___, item) -> {
+            try {
+                if (item == null) {
+                    details.clearItem();
+                } else {
+                    details.showItem(item.getItem(), item.getOverview());
                 }
+            } catch (ProfileLockedException e) {
+                e.printStackTrace();
+            } catch (ItemException e) {
+                e.printStackTrace();
             }
         });
     }
     
-    public void setProfile(Profile profile) throws ProfileException, ItemException {
-        this.list.showProfile(profile);
+    public void showProfile(Profile profile) {
+        try {
+            header.showProfile(profile);
+            list.showProfile(profile);
+        } catch (ProfileException | ItemException e) {
+            e.printStackTrace();
+            fireEvent(ProfileEvent.lock());
+        }
     }
     
     public void clearProfile() {
-        this.list.clearProfile();
+        list.clearProfile();
+        header.clearProfile();
     }
 }
