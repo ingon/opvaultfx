@@ -11,51 +11,72 @@ import org.abpass.opvault.Vault;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class LockedPane extends VBox {
-    private final SecurePasswordField passwordFld;
+    private final Label headerLbl = new Label("ABPass");
+    
+    private final TextArea infoField = new TextArea();
+    private final Button changeBtn = new Button("Change");
+    
+    private final SecurePasswordField passwordFld = new SecurePasswordField();
+    private final Button unlockBtn = new Button("Unlock");
+    
+    private static Settings settings = Settings.load();
     
     private Vault vault;
     private Profile profile;
     
     public LockedPane() throws Exception {
-        var freddy = Paths.get("/home/sungon/Downloads/freddy-2013-12-04/onepassword_data");
-        var dropbox = Paths.get(System.getProperty("user.home"), "Dropbox", "1Password.opvault");
-        
-////        vault = new Vault(dropbox);
-        vault = new Vault(freddy);
-        profile = vault.getDefaultProfile();
+        if (settings != null) {
+            vault = new Vault(Paths.get(settings.getVault()));
+            profile = vault.getProfile(settings.getProfile());
+        }
         
         setId("locked");
         
-        VBox center = new VBox();
+        GridPane center = new GridPane();
         center.setId("locked-center");
-        
-        BorderPane passwordRow = new BorderPane();
-        passwordRow.setId("locked-password");
-        center.getChildren().add(passwordRow);
-        
-        passwordFld = new SecurePasswordField();
-        passwordRow.setCenter(passwordFld);
-        
-        var unlockBtn = new Button("Unlock");
-        unlockBtn.setId("locked-unlock");
-        passwordRow.setRight(unlockBtn);
-        
         getChildren().add(center);
+        
+        headerLbl.setId("locked-header");
+        center.add(headerLbl, 0, 0, 2, 1);
+        GridPane.setHalignment(headerLbl, HPos.CENTER);
+        
+        infoField.setId("locked-info");
+        infoField.setEditable(false);
+        center.add(infoField, 0, 1, 2, 1);
+        
+        changeBtn.setId("locked-change");
+        center.add(changeBtn, 1, 1, 1, 1);
+        
+        passwordFld.setId("locked-password");
+        center.add(passwordFld, 0, 2, 2, 1);
+        
+        unlockBtn.setId("locked-unlock");
+        center.add(unlockBtn, 1, 2, 2, 1);
         
         passwordFld.addEventHandler(ActionEvent.ACTION, this::act);
         unlockBtn.setOnAction(this::act);
+        
+        if (vault != null) {
+            var text = String.format("Vault:%s\nProfile:%s", vault.path.toString(), profile.getProfileName());
+            infoField.setText(text);
+        }
     }
     
     private void act(ActionEvent ev) {

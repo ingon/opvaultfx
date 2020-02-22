@@ -2,9 +2,9 @@
 	app-bg-primary: #90caf9;
 	app-bg-primary-light: #c3fdff;
 	app-bg-primary-dark: #5d99c6;
-	app-bg-secondary: #ffe082;
-	app-bg-secondary-light: #ffffb3;
-	app-bg-secondary-dark: #caae53;
+	app-bg-secondary: #f9bf90;
+	app-bg-secondary-light: #fff21c;
+	app-bg-secondary-dark: #c48f62;
 	app-bg-error: cf6679;
 	app-bg: #121212;
 	app-bg-surface: #121212;
@@ -101,11 +101,59 @@
 }
 
 #locked-center {
-	-fx-spacing: 8px;
+	-fx-hgap: 8px;
+	-fx-vgap: 1em;
+	-fx-padding: 1em;
 	-fx-alignment: center;
-	-fx-fill-width: false;
-	-fx-background-color: app-bg;
-	-fx-padding: 16px;
+	-fx-background-color: app-bg-surface-dp2;
+	-fx-background-radius: 8px;
+	-fx-effect: app-bg-shadow-dp2;
+}
+
+#locked-header {
+	-fx-text-fill: app-bg-primary;
+	-fx-font-size: 2.5em;
+}
+
+#locked-info {
+	-fx-pref-column-count: 20;
+	-fx-pref-row-count: 4;
+	-fx-wrap-text: true;
+	-fx-background-color: app-bg-surface-dp4;
+	-fx-effect: app-bg-shadow-dp2;
+	-fx-text-fill: app-fg-high;
+	-fx-highlight-fill: app-bg-primary;
+	-fx-highlight-text-fill: app-bg;
+}
+
+#locked-info .content {
+	-fx-background-color: app-bg-surface-dp4;
+}
+
+#locked-profile-fld {
+	-fx-background-color: app-bg-surface-dp4;
+	-fx-text-fill: app-fg-high;
+	-fx-highlight-fill: app-bg-primary;
+	-fx-highlight-text-fill: app-bg;
+	-fx-effect: app-bg-shadow-dp2;
+	-fx-padding: 0.5em;
+}
+
+#locked-change {
+	-fx-alignment: center;
+	-fx-text-alignment: center;
+	-fx-effect: app-bg-shadow-dp4;
+	-fx-text-fill: app-bg;
+	-fx-background-color: app-bg-secondary;
+	-fx-font-weight: bold;
+}
+
+#locked-change:hover {
+	-fx-background-color: derive(app-bg-secondary, 20%);
+}
+
+#locked-change:armed {
+	-fx-background-color: app-bg-secondary-dark;
 }
 
 #locked-password {
@@ -115,7 +163,7 @@
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-background-radius: 8px;
 	-fx-padding: 16px;
-	-fx-effect: app-bg-shadow-dp6;
+	-fx-effect: app-bg-shadow-dp4;
 	-fx-border-color: app-bg;
 	-fx-border-radius: 8px;
 }
@@ -127,6 +175,10 @@
 	-fx-text-fill: app-bg;
 	-fx-background-color: app-bg-primary;
 	-fx-font-weight: bold;
+}
+
+#locked-unlock:hover {
+	-fx-background-color: derive(app-bg-primary, 20%);
 }
 
 #locked-unlock:armed {
