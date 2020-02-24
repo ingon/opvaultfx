@@ -102,7 +102,7 @@ public class LockedPane extends VBox {
         
         if (vault != null) {
             vaultValue.setText(splitPath(vault.path));
-            profileValue.setText(profile.getProfileName());
+            profileValue.setText(profile.path.getFileName().toString());
         }
     }
     
@@ -149,7 +149,7 @@ public class LockedPane extends VBox {
             }
             
             settings.setVault(this.vault.path.toString());
-            settings.setProfile(profile.getProfileName());
+            settings.setProfile(this.profile.path.getFileName().toString());
             settings.save();
         } catch(ProfileException e) {
             passwordFld.reset(e.getMessage());
@@ -190,7 +190,7 @@ public class LockedPane extends VBox {
             }
             
             vaultValue.setText(splitPath(this.vault.path));
-            profileValue.setText(profile.getProfileName());
+            profileValue.setText(this.profile.path.getFileName().toString());
         } catch (VaultException | ProfileException e) {
             new Alert(AlertType.ERROR, "Exception: " + e.getLocalizedMessage()).show();
         }
