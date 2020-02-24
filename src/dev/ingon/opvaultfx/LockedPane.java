@@ -31,7 +31,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 
 public class LockedPane extends VBox {
-    private final Label headerLbl = new Label("ABPass");
+    private final Label headerLbl = new Label("OPVaultFX");
     
     private final Label vaultLbl = new Label("Vault: ");
     private final Label vaultValue = new Label();

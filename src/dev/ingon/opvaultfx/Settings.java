@@ -83,7 +83,7 @@ public class Settings {
         
         String osName = System.getProperty("os.name");
         if (osName.startsWith("Windows")) {
-            return userHome.resolve(Path.of("AppData", "Local", "abpass"));
+            return userHome.resolve(Path.of("AppData", "Local", "opvaultfx"));
         }
         
         var configRoot = userHome.resolve(".config");
@@ -93,6 +93,6 @@ public class Settings {
             configRoot = Paths.get(configHome);
         }
         
-        return configRoot.resolve("abpass");
+        return configRoot.resolve("opvaultfx");
     }
 }

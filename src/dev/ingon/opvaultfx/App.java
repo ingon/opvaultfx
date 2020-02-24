@@ -44,7 +44,7 @@ public class App extends Application {
             unlockedPane.clearProfile();
         });
         
-        primaryStage.setTitle("abpass");
+        primaryStage.setTitle("OPVaultFX");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

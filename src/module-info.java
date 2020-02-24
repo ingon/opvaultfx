@@ -1,4 +1,4 @@
-module abpass {
+module dev.ingon.opvaultfx {
     requires javafx.base;
     requires javafx.controls;
     
