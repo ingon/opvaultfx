@@ -5,8 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.json.zero.hl.JsonParser;
-import org.json.zero.hl.JsonTypedHandler;
+import dev.ingon.json.zero.hl.JsonParser;
+import dev.ingon.json.zero.hl.JsonTypedHandler;
 
 public class Settings {
     public static Settings load() {

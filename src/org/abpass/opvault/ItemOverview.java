@@ -2,8 +2,8 @@ package org.abpass.opvault;
 
 import java.util.List;
 
-import org.json.zero.hl.JsonStringHandler;
-import org.json.zero.hl.JsonTypedHandler;
+import dev.ingon.json.zero.hl.JsonStringHandler;
+import dev.ingon.json.zero.hl.JsonTypedHandler;
 
 public class ItemOverview {
     static JsonTypedHandler<ItemOverview> newParser() {

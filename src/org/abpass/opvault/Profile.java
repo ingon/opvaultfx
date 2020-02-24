@@ -19,10 +19,11 @@ import org.abpass.opvault.ProfileException.ProfileLockedException;
 import org.abpass.opvault.ProfileException.ProfileNotFileException;
 import org.abpass.opvault.ProfileException.ProfileNotFoundException;
 import org.abpass.opvault.ProfileException.ProfileReadException;
-import org.json.zero.ParseException;
-import org.json.zero.hl.JsonMapHandler;
-import org.json.zero.hl.JsonParser;
-import org.json.zero.hl.JsonTypedHandler;
+
+import dev.ingon.json.zero.ParseException;
+import dev.ingon.json.zero.hl.JsonMapHandler;
+import dev.ingon.json.zero.hl.JsonParser;
+import dev.ingon.json.zero.hl.JsonTypedHandler;
 
 public class Profile {
     public static final String PROFILE_PREAMBLE = "var profile=";

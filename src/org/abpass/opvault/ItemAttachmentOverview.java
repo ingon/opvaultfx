@@ -1,6 +1,6 @@
 package org.abpass.opvault;
 
-import org.json.zero.hl.JsonTypedHandler;
+import dev.ingon.json.zero.hl.JsonTypedHandler;
 
 public class ItemAttachmentOverview {
     static JsonTypedHandler<ItemAttachmentOverview> newParser() {

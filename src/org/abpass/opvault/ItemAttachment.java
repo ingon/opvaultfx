@@ -14,9 +14,10 @@ import org.abpass.opvault.ItemAttachmentException.ItemAttachmentOverviewExceptio
 import org.abpass.opvault.ItemAttachmentException.ItemAttachmentOverviewParseException;
 import org.abpass.opvault.ProfileException.ProfileKeysException;
 import org.abpass.opvault.ProfileException.ProfileLockedException;
-import org.json.zero.ParseException;
-import org.json.zero.hl.JsonParser;
-import org.json.zero.hl.JsonTypedHandler;
+
+import dev.ingon.json.zero.ParseException;
+import dev.ingon.json.zero.hl.JsonParser;
+import dev.ingon.json.zero.hl.JsonTypedHandler;
 
 public class ItemAttachment {
     private static final int HEADER_MIN_SIZE = 16;

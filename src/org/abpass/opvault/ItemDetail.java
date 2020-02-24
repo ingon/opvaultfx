@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.zero.hl.JsonStringHandler;
-import org.json.zero.hl.JsonTypedHandler;
+import dev.ingon.json.zero.hl.JsonStringHandler;
+import dev.ingon.json.zero.hl.JsonTypedHandler;
 
 public class ItemDetail {
     static JsonTypedHandler<ItemDetail> newParser() {

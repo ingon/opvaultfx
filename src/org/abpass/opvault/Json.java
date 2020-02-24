@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import org.json.zero.ParseException;
-import org.json.zero.hl.JsonBaseHandler;
-import org.json.zero.hl.JsonTypedHandler;
+import dev.ingon.json.zero.ParseException;
+import dev.ingon.json.zero.hl.JsonBaseHandler;
+import dev.ingon.json.zero.hl.JsonTypedHandler;
 
 class Json<T> extends JsonTypedHandler<T> {
     private static DateTimeFormatter MONTH_YEAR_FORMAT_LONG = DateTimeFormatter.ofPattern("yyyyMM");
