@@ -1,8 +1,5 @@
 package dev.ingon.opvaultfx;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import dev.ingon.opvault.Item;
 import dev.ingon.opvault.Item.Category;
 import javafx.scene.image.Image;
@@ -57,10 +54,6 @@ public class CategoryIcons {
     }
     
     private static Image getIconFromFile(String name, Size size) {
-        try {
-            return new Image(new FileInputStream("images/" + name + "_white" + size.suffix + ".png"));
-        } catch (FileNotFoundException e) {
-            return null;
-        }
+        return new Image(CategoryIcons.class.getResourceAsStream("/images/" + name + "_white" + size.suffix + ".png"));
     }
 }

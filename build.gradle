@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
+
+javafx {
+    version = '13'
+    modules = [ 'javafx.base', 'javafx.controls' ]
+}
+
+repositories {
+    jcenter()
+    flatDir {
+       dirs 'lib'
+    }
+}
+
+dependencies {
+    implementation 'dev.ingon:json-zero:1.0.0'
+
+    testImplementation 'junit:junit:4.12'
+}
+
+application {
+    mainClassName = 'dev.ingon.opvaultfx.App'
+}

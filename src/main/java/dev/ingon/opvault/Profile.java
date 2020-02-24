@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.ingon.json.zero.ParseException;
 import dev.ingon.json.zero.hl.JsonMapHandler;
 import dev.ingon.json.zero.hl.JsonParser;
 import dev.ingon.json.zero.hl.JsonTypedHandler;
@@ -23,6 +22,7 @@ import dev.ingon.opvault.ProfileException.ProfileLockedException;
 import dev.ingon.opvault.ProfileException.ProfileNotFileException;
 import dev.ingon.opvault.ProfileException.ProfileNotFoundException;
 import dev.ingon.opvault.ProfileException.ProfileReadException;
+import dev.ingon.json.zero.ParseException;
 
 public class Profile {
     public static final String PROFILE_PREAMBLE = "var profile=";
