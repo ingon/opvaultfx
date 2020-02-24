@@ -3,25 +3,19 @@ package dev.ingon.opvaultfx;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class App extends Application {
-    private StackPane stack;
     private LockedPane lockedPane;
     private UnlockedPane unlockedPane;
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-        stack = new StackPane();
-        stack.setMinSize(400, 300);
-        
         lockedPane = new LockedPane();
         unlockedPane = new UnlockedPane();
         
-        var scene = new Scene(stack, 1024, 768);
+        var scene = new Scene(lockedPane, 1024, 768);
         scene.fillProperty().set(Color.web("#121212"));
         scene.getStylesheets().add("app.css");
         scene.setOnKeyPressed((ev) -> {
@@ -31,16 +25,13 @@ public class App extends Application {
            }
         });
         
-        stack.setPrefSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        stack.getChildren().add(lockedPane);
-        
         scene.addEventHandler(ProfileEvent.UNLOCK, (ev) -> {
             unlockedPane.showProfile(ev.profile);
-            stack.getChildren().set(0, unlockedPane);
+            scene.setRoot(unlockedPane);
         });
         
         scene.addEventHandler(ProfileEvent.LOCK, (ev) -> {
-            stack.getChildren().set(0, lockedPane);
+            scene.setRoot(lockedPane);
             unlockedPane.clearProfile();
         });
         
