@@ -33,7 +33,7 @@ public class ItemSectionPane extends VBox {
                 getChildren().add(titleLbl);
                 
                 if (f.getKind() == Kind.Concealed) {
-                    if ("one-time password".equals(f.getTitle())) {
+                    if (f.getName() != null && f.getName().startsWith("TOTP_")) {
                         getChildren().add(new TOTPPane((SecureString) f.getValue()));
                     } else {
                         getChildren().add(new PasswordPane((SecureString) f.getValue()));
