@@ -1,5 +1,7 @@
 package org.abpass.ui;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.abpass.opvault.Profile;
@@ -7,30 +9,35 @@ import org.abpass.opvault.ProfileException;
 import org.abpass.opvault.SecureString;
 import org.abpass.opvault.Security;
 import org.abpass.opvault.Vault;
+import org.abpass.opvault.VaultException;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
+import javafx.stage.DirectoryChooser;
 
 public class LockedPane extends VBox {
     private final Label headerLbl = new Label("ABPass");
     
-    private final TextArea infoField = new TextArea();
+    private final Label vaultLbl = new Label("Vault: ");
+    private final Label vaultValue = new Label();
+    private final Label profileLbl = new Label("Profile: ");
+    private final Label profileValue = new Label();
     private final Button changeBtn = new Button("Change");
     
     private final SecurePasswordField passwordFld = new SecurePasswordField();
@@ -53,30 +60,78 @@ public class LockedPane extends VBox {
         center.setId("locked-center");
         getChildren().add(center);
         
+        var c1const = new ColumnConstraints(50, 100, 150);
+        c1const.setHgrow(Priority.NEVER);
+        var c2const = new ColumnConstraints(100, 150, Double.MAX_VALUE);
+        c2const.setHgrow(Priority.ALWAYS);
+        center.getColumnConstraints().addAll(c1const, c2const);
+        
         headerLbl.setId("locked-header");
-        center.add(headerLbl, 0, 0, 2, 1);
+        center.add(headerLbl, 0, 0, 3, 1);
         GridPane.setHalignment(headerLbl, HPos.CENTER);
         
-        infoField.setId("locked-info");
-        infoField.setEditable(false);
-        center.add(infoField, 0, 1, 2, 1);
+        vaultLbl.setId("locked-vault-lbl");
+        center.add(vaultLbl, 0, 1);
+        GridPane.setHalignment(vaultLbl, HPos.RIGHT);
+        GridPane.setValignment(vaultLbl, VPos.TOP);
+        
+        vaultValue.setId("locked-vault");
+        center.add(vaultValue, 1, 1, 2, 1);
+        
+        profileLbl.setId("locked-profile-lbl");
+        center.add(profileLbl, 0, 2);
+        GridPane.setHalignment(profileLbl, HPos.RIGHT);
+        
+        profileValue.setId("locked-profile");
+        center.add(profileValue, 1, 2);
         
         changeBtn.setId("locked-change");
-        center.add(changeBtn, 1, 1, 1, 1);
+        center.add(changeBtn, 2, 2);
+        GridPane.setHalignment(changeBtn, HPos.RIGHT);
         
         passwordFld.setId("locked-password");
-        center.add(passwordFld, 0, 2, 2, 1);
+        center.add(passwordFld, 0, 3, 2, 1);
+        GridPane.setHalignment(passwordFld, HPos.LEFT);
         
         unlockBtn.setId("locked-unlock");
-        center.add(unlockBtn, 1, 2, 2, 1);
+        center.add(unlockBtn, 2, 3);
         
         passwordFld.addEventHandler(ActionEvent.ACTION, this::act);
+        changeBtn.setOnAction(this::chooseVault);
         unlockBtn.setOnAction(this::act);
         
         if (vault != null) {
-            var text = String.format("Vault:%s\nProfile:%s", vault.path.toString(), profile.getProfileName());
-            infoField.setText(text);
+            vaultValue.setText(splitPath(vault.path));
+            profileValue.setText(profile.getProfileName());
         }
+    }
+    
+    private String splitPath(Path input) {
+        String sep = FileSystems.getDefault().getSeparator();
+        
+        StringBuilder result = new StringBuilder();
+        
+        StringBuilder line = new StringBuilder();
+        for (var p : input) {
+            String part = p.toString();
+            if (line.length() + part.length() > 35) {
+                if (result.length() > 0) {
+                    result.append(" ");
+                }
+                result.append(line).append("\n");
+                line.setLength(0);
+            }
+            line.append(sep).append(part);
+        }
+        
+        if (line.length() > 0) {
+            if (result.length() > 0) {
+                result.append(" ");
+            }
+            result.append(line);
+        }
+        
+        return result.toString();
     }
     
     private void act(ActionEvent ev) {
@@ -88,8 +143,56 @@ public class LockedPane extends VBox {
             profile.unlock(passwordFld.text);
             passwordFld.reset(null);
             fireEvent(ProfileEvent.unlock(profile));
+            
+            if (settings == null) {
+                settings = new Settings();
+            }
+            
+            settings.setVault(this.vault.path.toString());
+            settings.setProfile(profile.getProfileName());
+            settings.save();
         } catch(ProfileException e) {
             passwordFld.reset(e.getMessage());
+        }
+    }
+    
+    private void chooseVault(ActionEvent ae) {
+        var chooser = new DirectoryChooser();
+        chooser.setTitle("Select vault");
+        var vaultLoc = chooser.showDialog(getParent().getScene().getWindow());
+        if (vaultLoc == null) {
+            new Alert(AlertType.ERROR, "No directory selected. \n\nSelect a valid 1password directory").show();
+            return;
+        }
+        
+        try {
+            var vault = new Vault(vaultLoc.toPath());
+            var profiles = vault.getProfileNames();
+            
+            if (profiles.isEmpty()) {
+                new Alert(AlertType.ERROR, "No profiles found. \n\nSelect a valid 1password directory").show();
+                return;
+            } else if (profiles.size() == 1) {
+                this.profile = vault.getProfile(profiles.get(0));
+                this.vault = vault;
+            } else {
+                var choice = new ChoiceDialog<String>(profiles.get(0), profiles);
+                choice.setTitle("Select profile");
+                choice.setContentText("Choose profile");
+                var selected = choice.showAndWait();
+                if (selected.isEmpty()) {
+                    new Alert(AlertType.ERROR, "No profile selected. \n\nTo continue select a profile").show();
+                    return;
+                }
+                
+                this.profile = vault.getProfile(selected.get());
+                this.vault = vault;
+            }
+            
+            vaultValue.setText(splitPath(this.vault.path));
+            profileValue.setText(profile.getProfileName());
+        } catch (VaultException | ProfileException e) {
+            new Alert(AlertType.ERROR, "Exception: " + e.getLocalizedMessage()).show();
         }
     }
     
@@ -162,50 +265,22 @@ public class LockedPane extends VBox {
             return new SecurePasswordFieldSkin(this);
         }
     }
-    
+
     private static class SecurePasswordFieldSkin extends SkinBase<SecurePasswordField> {
-        private Canvas canvas;
+        private final Label pass = new Label();
         
         protected SecurePasswordFieldSkin(SecurePasswordField control) {
             super(control);
             
-            canvas = new Canvas(400, 40); // update with font metrics
-            getChildren().add(canvas);
-
-            redraw(0);
-            control.len.addListener((source, oldValue, newValue) -> {
-                redraw(newValue.intValue());
-            });
-        }
-        
-        private void redraw(int len) {
-            var ctx = canvas.getGraphicsContext2D();
-            ctx.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+            getChildren().add(pass);
             
-            ctx.setFill(Color.web("#fefefe"));
-            if (len == 0) {
-                ctx.setFont(Font.font(20));
-                if (getSkinnable().error.get() != null) {
-                    ctx.setFill(Color.web("#CF6679"));
-                    ctx.fillText(getSkinnable().error.get(), 8, 24);
-                } else {
-                    ctx.fillText("Master password", 8, 24);
+            control.len.addListener((__, ___, len) -> {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0, n = len.intValue(); i < n; i++) {
+                    sb.append("\u25CF");
                 }
-            } else {
-                for (int i = 0; i < len; i++) {
-                    ctx.fillOval(i * 32 + 8, 8, 24, 24);
-                }
-            }
-        }
-        
-        @Override
-        protected double computePrefHeight(double width, double topInset, double rightInset, double bottomInset, double leftInset) {
-            return canvas.getHeight() + topInset + bottomInset;
-        }
-        
-        @Override
-        protected double computePrefWidth(double height, double topInset, double rightInset, double bottomInset, double leftInset) {
-            return canvas.getWidth() + leftInset + rightInset;
+                pass.setText(sb.toString());
+            });
         }
     }
 }

@@ -115,21 +115,6 @@
 	-fx-font-size: 2.5em;
 }
 
-#locked-info {
-	-fx-pref-column-count: 20;
-	-fx-pref-row-count: 4;
-	-fx-wrap-text: true;
-	-fx-background-color: app-bg-surface-dp4;
-	-fx-effect: app-bg-shadow-dp2;
-	-fx-text-fill: app-fg-high;
-	-fx-highlight-fill: app-bg-primary;
-	-fx-highlight-text-fill: app-bg;
-}
-
-#locked-info .content {
-	-fx-background-color: app-bg-surface-dp4;
-}
-
 #locked-profile-fld {
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-text-fill: app-fg-high;
@@ -137,6 +122,15 @@
 	-fx-highlight-text-fill: app-bg;
 	-fx-effect: app-bg-shadow-dp2;
 	-fx-padding: 0.5em;
+}
+
+#locked-vault-lbl, #locked-profile-lbl {
+	-fx-text-fill: app-fg-high;
+}
+
+#locked-vault, #locked-profile {
+	-fx-font-family: monospace;
+	-fx-text-fill: app-fg-high;
 }
 
 #locked-change {
@@ -157,15 +151,22 @@
 }
 
 #locked-password {
+	-fx-alignment: left;
 	-fx-spacing: 8px;
-	-fx-alignment: center;
 	-fx-fill-height: false;
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-background-radius: 8px;
-	-fx-padding: 16px;
+	-fx-padding: 8px 0 8px 0;
 	-fx-effect: app-bg-shadow-dp4;
 	-fx-border-color: app-bg;
 	-fx-border-radius: 8px;
+}
+
+#locked-password .label {
+	-fx-text-fill: app-fg;
+	-fx-background-color: app-bg-surface-dp4;
+	-fx-text-overrun: leading-ellipsis;
+	-fx-label-padding: 0 8px 0 8px;
 }
 
 #locked-unlock {
@@ -175,6 +176,7 @@
 	-fx-text-fill: app-bg;
 	-fx-background-color: app-bg-primary;
 	-fx-font-weight: bold;
+	-fx-max-width: infinity;
 }
 
 #locked-unlock:hover {
