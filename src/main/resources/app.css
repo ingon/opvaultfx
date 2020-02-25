@@ -137,8 +137,8 @@
 	-fx-alignment: center;
 	-fx-text-alignment: center;
 	-fx-effect: app-bg-shadow-dp4;
-	-fx-text-fill: app-bg;
-	-fx-background-color: app-bg-secondary;
+	-fx-text-fill: app-fg-high;
+	-fx-background-color: app-bg-surface-dp4;
 	-fx-font-weight: bold;
 }
 

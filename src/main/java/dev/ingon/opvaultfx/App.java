@@ -38,6 +38,8 @@ public class App extends Application {
         primaryStage.setTitle("OPVaultFX");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        lockedPane.show();
     }
 
     public static void main(String[] args) throws Exception {

@@ -105,6 +105,10 @@ public class LockedPane extends VBox {
         }
     }
     
+    public void show() {
+        passwordFld.requestFocus();
+    }
+    
     private String splitPath(Path input) {
         String sep = FileSystems.getDefault().getSeparator();
         
