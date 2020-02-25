@@ -24,7 +24,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'dev.ingon.opvaultfx.App'
+    mainClassName = '$moduleName/dev.ingon.opvaultfx.App'
 }
 
 
