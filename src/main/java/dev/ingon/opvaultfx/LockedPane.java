@@ -158,7 +158,7 @@ public class LockedPane extends VBox {
     private void chooseVault(ActionEvent ae) {
         var chooser = new DirectoryChooser();
         chooser.setTitle("Select vault");
-        var vaultLoc = chooser.showDialog(getParent().getScene().getWindow());
+        var vaultLoc = chooser.showDialog(getScene().getWindow());
         if (vaultLoc == null) {
             new Alert(AlertType.ERROR, "No directory selected. \n\nSelect a valid 1password directory").show();
             return;
