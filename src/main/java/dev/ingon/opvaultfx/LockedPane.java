@@ -209,6 +209,10 @@ public class LockedPane extends VBox {
             setFocusTraversable(true);
             setFocused(true);
             
+            setOnMouseClicked((__) -> {
+                requestFocus();
+            });
+            
             setOnKeyTyped((e) -> {
                 if (KeyEvent.CHAR_UNDEFINED.equals(e.getCharacter())) {
                     return;

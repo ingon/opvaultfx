@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.beryx.jlink' version '2.12.0'
 }
 
 javafx {
@@ -24,4 +25,11 @@ dependencies {
 
 application {
     mainClassName = 'dev.ingon.opvaultfx.App'
+}
+
+
+jlink {
+    launcher {
+        name = 'opvaultfx'
+    }
 }
