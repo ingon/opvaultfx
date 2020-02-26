@@ -14,12 +14,13 @@
 ## Running
 
 To run `opvaultfx` (on linux)* you need to:
-* Install OpenJDK13 (may work with other versions)*
+* Install OpenJDK13 (may work with other versions)**
 * Download and extract `dist.zip`
 * Run `./bin/opvaultfx`
   
-* Builds for MacOS and Windows are in works, try running from source on these OSes
-* Native installers are also in works, depending on jpackage
+&ast; Builds for MacOS and Windows are in works, try running from source on these OSes
+
+** Native installers are also in works, depending on jpackage
   
 To test the app, you can use [OPVault sample data](https://cache.agilebits.com/security-kb/)
 
