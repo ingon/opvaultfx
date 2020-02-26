@@ -99,6 +99,10 @@ public class LockedPane extends VBox {
         
         try {
             settings = Settings.load();
+            if (settings == null) {
+                return;
+            }
+            
             vault = new Vault(Paths.get(settings.getVault()));
             vaultValue.setText(splitPath(vault.path));
             
