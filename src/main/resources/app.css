@@ -143,11 +143,11 @@
 }
 
 #locked-change:hover {
-	-fx-background-color: derive(app-bg-secondary, 20%);
+	-fx-background-color: app-bg-surface-dp6;
 }
 
 #locked-change:armed {
-	-fx-background-color: app-bg-secondary-dark;
+	-fx-background-color: app-bg-surface-dp2;
 }
 
 #locked-password {
