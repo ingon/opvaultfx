@@ -24,7 +24,7 @@ dependencies {
 }
 
 application {
-    mainClassName = '$moduleName/dev.ingon.opvaultfx.App'
+    mainClassName = 'dev.ingon.opvaultfx/dev.ingon.opvaultfx.App'
 }
 
 jlink {
