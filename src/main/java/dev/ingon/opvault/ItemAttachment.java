@@ -63,7 +63,7 @@ public class ItemAttachment {
         handler.stringProperty("uuid", (t, o) -> t.uuid = o);
         handler.stringProperty("itemUUID", (t, o) -> t.itemUUID = o);
         handler.numberProperty("contentsSize", (t, o) -> t.contentsSize = o.intValue());
-        handler.booleanProperty("external", (t, o) -> System.out.println("external: " + o)); // TODO ignore?
+        handler.booleanProperty("external", (t, o) -> t.external = o);
 
         handler.instantProperty("createdAt", (t, o) -> t.createdAt = o);
         handler.instantProperty("updatedAt", (t, o) -> t.updatedAt = o);
@@ -79,6 +79,7 @@ public class ItemAttachment {
     private String uuid;
     private String itemUUID;
     private int contentsSize;
+    private Boolean external;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -104,6 +105,10 @@ public class ItemAttachment {
     
     public int getContentsSize() {
         return contentsSize;
+    }
+    
+    public Boolean getExternal() {
+        return external;
     }
     
     public Instant getCreatedAt() {
