@@ -1,8 +1,5 @@
 package dev.ingon.opvaultfx;
 
-import java.io.IOException;
-
-import dev.ingon.opvault.ItemException;
 import dev.ingon.opvault.Profile;
 import dev.ingon.opvault.ProfileException;
 import dev.ingon.opvault.ProfileException.ProfileLockedException;
@@ -16,7 +13,7 @@ public class UnlockedPane extends BorderPane {
     private final ListPane list = new ListPane();
     private final DetailsPane details = new DetailsPane();
     
-    public UnlockedPane() throws IOException {
+    public UnlockedPane() {
         setId("unlocked");
         
         setTop(header);
@@ -38,19 +35,18 @@ public class UnlockedPane extends BorderPane {
                     details.showItem(item.getItem(), item.getOverview());
                 }
             } catch (ProfileLockedException e) {
-                e.printStackTrace();
-            } catch (ItemException e) {
-                e.printStackTrace();
+                App.showError("Profile already locked", e);
+                fireEvent(ProfileEvent.lock());
             }
         });
     }
     
     public void showProfile(Profile profile) {
+        header.showProfile(profile);
         try {
-            header.showProfile(profile);
             list.showProfile(profile);
-        } catch (ProfileException | ItemException e) {
-            e.printStackTrace();
+        } catch (ProfileException e) {
+            App.showError("Cannot load profile: " + profile.getProfileName(), e);
             fireEvent(ProfileEvent.lock());
         }
     }

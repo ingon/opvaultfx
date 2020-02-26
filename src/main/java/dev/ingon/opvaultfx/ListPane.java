@@ -87,14 +87,18 @@ public class ListPane extends VBox {
         });
     }
     
-    public void showProfile(Profile profile) throws ProfileException, ItemException {
+    public void showProfile(Profile profile) throws ProfileException {
         this.allItems.clear();
 
         var items = profile.getItems();
         try (var overviewKeys = profile.overviewKeys()) {
             for (var i : items) {
-                var overview = i.getOverview(overviewKeys);
-                this.allItems.add(new ItemWithOverview(i, overview));
+                try {
+                    var overview = i.getOverview(overviewKeys);
+                    this.allItems.add(new ItemWithOverview(i, overview));
+                } catch (ItemException e) {
+                    App.showError("Cannot load item overview: " + i.getUuid(), e);
+                }
             }
         }
         

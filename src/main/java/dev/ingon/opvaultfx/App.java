@@ -2,6 +2,8 @@ package dev.ingon.opvaultfx;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -11,7 +13,7 @@ public class App extends Application {
     private UnlockedPane unlockedPane;
     
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         lockedPane = new LockedPane();
         unlockedPane = new UnlockedPane();
         
@@ -42,7 +44,17 @@ public class App extends Application {
         lockedPane.show();
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         launch(args);
+    }
+
+    public static void showError(String header, Exception exc) {
+        showError(header, exc.getLocalizedMessage());
+    }
+    
+    public static void showError(String header, String message) {
+        var alert = new Alert(AlertType.ERROR, message);
+        alert.setHeaderText(header);
+        alert.show();
     }
 }

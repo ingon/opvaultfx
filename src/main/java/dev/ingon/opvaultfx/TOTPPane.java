@@ -54,7 +54,7 @@ public class TOTPPane extends BorderPane {
         }
         
         @Override
-        protected Void call() throws Exception {
+        protected Void call() throws InterruptedException {
             while (!isCancelled()) {
                 updateMessage(generator.generate());
                 

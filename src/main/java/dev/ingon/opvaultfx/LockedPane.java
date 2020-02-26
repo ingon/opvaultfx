@@ -10,13 +10,12 @@ import dev.ingon.opvault.SecureString;
 import dev.ingon.opvault.Security;
 import dev.ingon.opvault.Vault;
 import dev.ingon.opvault.VaultException;
+import dev.ingon.opvault.VaultException.VaultProfilesException;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Control;
@@ -42,17 +41,12 @@ public class LockedPane extends VBox {
     private final SecurePasswordField passwordFld = new SecurePasswordField();
     private final Button unlockBtn = new Button("Unlock");
     
-    private static Settings settings = Settings.load();
+    private static Settings settings;
     
     private Vault vault;
     private Profile profile;
     
-    public LockedPane() throws Exception {
-        if (settings != null) {
-            vault = new Vault(Paths.get(settings.getVault()));
-            profile = vault.getProfile(settings.getProfile());
-        }
-        
+    public LockedPane() {
         setId("locked");
         
         GridPane center = new GridPane();
@@ -98,15 +92,27 @@ public class LockedPane extends VBox {
         passwordFld.addEventHandler(ActionEvent.ACTION, this::act);
         changeBtn.setOnAction(this::chooseVault);
         unlockBtn.setOnAction(this::act);
-        
-        if (vault != null) {
-            vaultValue.setText(splitPath(vault.path));
-            profileValue.setText(profile.path.getFileName().toString());
-        }
     }
     
     public void show() {
         passwordFld.requestFocus();
+        
+        try {
+            settings = Settings.load();
+            vault = new Vault(Paths.get(settings.getVault()));
+            vaultValue.setText(splitPath(vault.path));
+            
+            profile = vault.getProfile(settings.getProfile());
+            profileValue.setText(profile.path.getFileName().toString());
+        } catch (SettingsException e) {
+            App.showError("Cannot load settings", e);
+        } catch (VaultException e) {
+            App.showError("Cannot load vault", e);
+            settings = null;
+        } catch (ProfileException e) {
+            App.showError("Cannot load profile", e);
+            settings = null;
+        }
     }
     
     private String splitPath(Path input) {
@@ -156,6 +162,8 @@ public class LockedPane extends VBox {
             settings.save();
         } catch(ProfileException e) {
             passwordFld.reset(e.getMessage());
+        } catch (SettingsException e) {
+            App.showError("Cannot save settings", e);
         }
     }
     
@@ -164,7 +172,7 @@ public class LockedPane extends VBox {
         chooser.setTitle("Select vault");
         var vaultLoc = chooser.showDialog(getScene().getWindow());
         if (vaultLoc == null) {
-            new Alert(AlertType.ERROR, "No directory selected. \n\nSelect a valid 1password directory").show();
+            App.showError("No vault selected", "Select a valid 1password vault to continue");
             return;
         }
         
@@ -173,7 +181,7 @@ public class LockedPane extends VBox {
             var profiles = vault.getProfileNames();
             
             if (profiles.isEmpty()) {
-                new Alert(AlertType.ERROR, "No profiles found. \n\nSelect a valid 1password directory").show();
+                App.showError("No profiles found", "Select a different 1password vault to continue");
                 return;
             } else if (profiles.size() == 1) {
                 this.profile = vault.getProfile(profiles.get(0));
@@ -184,7 +192,7 @@ public class LockedPane extends VBox {
                 choice.setContentText("Choose profile");
                 var selected = choice.showAndWait();
                 if (selected.isEmpty()) {
-                    new Alert(AlertType.ERROR, "No profile selected. \n\nTo continue select a profile").show();
+                    App.showError("No profile selected", "Select a profile to continue");
                     return;
                 }
                 
@@ -194,8 +202,12 @@ public class LockedPane extends VBox {
             
             vaultValue.setText(splitPath(this.vault.path));
             profileValue.setText(this.profile.path.getFileName().toString());
-        } catch (VaultException | ProfileException e) {
-            new Alert(AlertType.ERROR, "Exception: " + e.getLocalizedMessage()).show();
+        } catch (VaultProfilesException e) {
+            App.showError("Cannot load vault profiles", e);
+        } catch (VaultException e) {
+            App.showError("Cannot load vault", e);
+        } catch (ProfileException e) {
+            App.showError("Cannot load profile", e);
         }
     }
     

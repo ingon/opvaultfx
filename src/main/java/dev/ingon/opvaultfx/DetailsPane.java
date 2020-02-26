@@ -87,14 +87,21 @@ public class DetailsPane extends VBox {
         detailBox.getChildren().clear();
     }
     
-    public void showItem(Item item, ItemOverview overview) throws ProfileLockedException, ItemException {
+    public void showItem(Item item, ItemOverview overview) throws ProfileLockedException {
+        try {
+            this.detail.setValue(item.getDetail());
+        } catch (ItemException e) {
+            App.showError("Cannot load item detail", e);
+            clearItem();
+            return;
+        }
+        
         this.item.setValue(item);
         this.overview.setValue(overview);
         
         icon.setImage(CategoryIcons.get(item, Size.BIG));
         title.setText(overview.getTitle());
         subtitle.setText(item.getCategory().name());
-        detail.setValue(item.getDetail());
         
         fields.setAll(detail.getValue().getFields());
         sections.setAll(detail.getValue().getSections());

@@ -5,11 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import dev.ingon.json.zero.ParseException;
 import dev.ingon.json.zero.hl.JsonParser;
 import dev.ingon.json.zero.hl.JsonTypedHandler;
 
 public class Settings {
-    public static Settings load() {
+    public static Settings load() throws SettingsException {
         Path settingsPath = getSettingsFile();
         if (settingsPath == null || !Files.isRegularFile(settingsPath)) {
             return null;
@@ -18,9 +19,10 @@ public class Settings {
         try {
             String settingsStr = Files.readString(settingsPath);
             return JsonParser.parse(settingsStr.toCharArray(), newParser());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (IOException e) {
+            throw new SettingsException("Cannot read settings file at: " + settingsPath, e);
+        } catch (ParseException e) {
+            throw new SettingsException("Invalid settings file at: " + settingsPath, e);
         }
     }
     
@@ -52,17 +54,17 @@ public class Settings {
         this.profile = profile;
     }
 
-    public void save() {
+    public void save() throws SettingsException {
         String settingsStr = String.format("{\"vault\": \"%s\", \"profile\": \"%s\"}", vault, profile);
         
         Path settingsPath = getSettingsFile();
         if (! Files.exists(settingsPath)) {
-            if (! Files.isDirectory(settingsPath.getParent())) {
+            Path settingsDir = settingsPath.getParent();
+            if (! Files.isDirectory(settingsDir)) {
                 try {
-                    Files.createDirectories(settingsPath.getParent());
+                    Files.createDirectories(settingsDir);
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    return;
+                    throw new SettingsException("Cannot create settings directory at: " + settingsDir, e);
                 }
             }
         }
@@ -70,7 +72,7 @@ public class Settings {
         try {
             Files.writeString(settingsPath, settingsStr);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new SettingsException("Cannot write settings file at: " + settingsPath, e);
         }
     }
     

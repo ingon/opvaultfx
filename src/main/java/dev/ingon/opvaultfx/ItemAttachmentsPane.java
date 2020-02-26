@@ -43,8 +43,11 @@ public class ItemAttachmentsPane extends VBox {
                     attPane.getChildren().addAll(img, txt, btn);
 
                     getChildren().add(attPane);
-                } catch (ProfileLockedException | ItemAttachmentException e) {
-                    e.printStackTrace();
+                } catch (ProfileLockedException e) {
+                    App.showError("Profile already locked", e);
+                    fireEvent(ProfileEvent.lock());
+                } catch (ItemAttachmentException e) {
+                    App.showError("Cannot load attachment: " + att.getUUID(), e);
                 }
             }
         });
