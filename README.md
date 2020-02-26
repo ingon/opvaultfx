@@ -3,7 +3,7 @@
 `opvaultfx` is a [1password vault](https://support.1password.com/opvault-design/) reader implemented in Java & JavaFX, with the following features:
 * Security. It attempts to achive that by:
     - Zero copy/allocation JSON parsing. OPVault uses JSON for representing things, and by using https://github.com/ingon/json-zero we
-    extract only the data we need, after which the in-memory source is zeroed out.
+    extract only the data we need, after which the in-memory data is zeroed out.
   * All passwords are stored encrypted in memory, decrypted only when needed (for copy/fill)
   * Every bit of information is kept in memory for a minimum time, then zeroed out.
 * Works on linux
