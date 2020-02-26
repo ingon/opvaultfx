@@ -27,7 +27,6 @@ application {
     mainClassName = '$moduleName/dev.ingon.opvaultfx.App'
 }
 
-
 jlink {
     launcher {
         name = 'opvaultfx'
