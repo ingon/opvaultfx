@@ -54,23 +54,14 @@ public class Security {
     }
     
     static byte[] encode(char[] src) {
-        CharBuffer cb = CharBuffer.wrap(src);
-        ByteBuffer bb = Charset.defaultCharset().encode(cb);
-        byte[] bbarr = bb.array();
-        if (bbarr.length == bb.remaining()) {
-            return bbarr;
-        }
-        try {
-            byte[] result = new byte[bb.remaining()];
-            bb.get(result);
-            return result;
-        } finally {
-            wipe(bbarr);
-        }
+        return encode(CharBuffer.wrap(src));
     }
 
     static byte[] encode(char[] src, int offset, int len) {
-        CharBuffer cb = CharBuffer.wrap(src, offset, len);
+        return encode(CharBuffer.wrap(src, offset, len));
+    }
+
+    static byte[] encode(CharBuffer cb) {
         ByteBuffer bb = Charset.defaultCharset().encode(cb);
         byte[] bbarr = bb.array();
         if (bbarr.length == bb.remaining()) {

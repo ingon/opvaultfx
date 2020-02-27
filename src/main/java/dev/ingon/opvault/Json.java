@@ -2,6 +2,7 @@ package dev.ingon.opvault;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.CharBuffer;
 import java.time.Instant;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -75,7 +76,14 @@ class JsonBase64Handler extends JsonBaseHandler<byte[]> {
 class JsonSecureStringHandler extends JsonBaseHandler<SecureString> {
     @Override
     public boolean stringValue(char[] source, int begin, int end, int escapeCount) throws ParseException {
-        complete(new SecureString(source, begin, end - begin));
+        CharBuffer cb = readChars(source, begin, end, escapeCount);
+        try {
+            complete(new SecureString(cb));
+        } finally {
+            if (escapeCount > 0) {
+                Security.wipe(cb.array());
+            }
+        }
         return true;
     }
 }

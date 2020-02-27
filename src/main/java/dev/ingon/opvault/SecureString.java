@@ -2,6 +2,7 @@ package dev.ingon.opvault;
 
 import java.lang.ref.Cleaner;
 import java.lang.ref.Cleaner.Cleanable;
+import java.nio.CharBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.function.Consumer;
@@ -22,31 +23,18 @@ public final class SecureString implements AutoCloseable {
     private final byte[] data;
     
     public SecureString(char[] source) {
-        SecretKey key = generateKey();
-        
-        byte[] data;
-        byte[] sourceData = Security.encode(source);
-        try {
-            Cipher cipher = Security.getAESPadding();
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            data = cipher.doFinal(sourceData);
-        } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-            throw new RuntimeException("cannot encrypt", e);
-        } finally {
-            Security.wipe(sourceData);
-        }
-        
-        this.cleanable = cleaner.register(this, () -> Security.wipe(data));
-        
-        this.key = key;
-        this.data = data;
+        this(CharBuffer.wrap(source));
     }
     
     public SecureString(char[] source, int start, int len) {
+        this(CharBuffer.wrap(source, start, len));
+    }
+    
+    public SecureString(CharBuffer source) {
         SecretKey key = generateKey();
 
         byte[] data;
-        byte[] sourceData = Security.encode(source, start, len);
+        byte[] sourceData = Security.encode(source);
         try {
             Cipher cipher = Security.getAESPadding();
             cipher.init(Cipher.ENCRYPT_MODE, key);
