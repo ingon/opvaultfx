@@ -27,6 +27,10 @@ application {
     mainClassName = 'dev.ingon.opvaultfx/dev.ingon.opvaultfx.App'
 }
 
+startScripts {
+    defaultJvmOpts = [ '-XX:+DisableAttachMechanism' ]
+}
+
 jlink {
     launcher {
         name = 'opvaultfx'
