@@ -35,6 +35,7 @@ public class App extends Application {
         scene.addEventHandler(ProfileEvent.LOCK, (ev) -> {
             scene.setRoot(lockedPane);
             unlockedPane.clearProfile();
+            lockedPane.show();
         });
         
         primaryStage.setTitle("OPVaultFX");

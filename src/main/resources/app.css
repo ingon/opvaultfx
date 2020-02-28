@@ -5,7 +5,7 @@
 	app-bg-secondary: #f9bf90;
 	app-bg-secondary-light: #fff21c;
 	app-bg-secondary-dark: #c48f62;
-	app-bg-error: cf6679;
+	app-bg-error: #cf6679;
 	app-bg: #121212;
 	app-bg-surface: #121212;
 	/*	app-bg-surface-dp1: rgba(255, 255, 255, 0.05);
@@ -136,9 +136,9 @@
 #locked-change {
 	-fx-alignment: center;
 	-fx-text-alignment: center;
-	-fx-effect: app-bg-shadow-dp4;
 	-fx-text-fill: app-fg-high;
 	-fx-background-color: app-bg-surface-dp4;
+	-fx-effect: app-bg-shadow-dp4;
 	-fx-font-weight: bold;
 }
 
@@ -156,25 +156,18 @@
 	-fx-fill-height: false;
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-background-radius: 8px;
-	-fx-padding: 8px 0 8px 0;
+	-fx-padding: 8px 0 8px 8px;
 	-fx-effect: app-bg-shadow-dp4;
 	-fx-border-color: app-bg;
 	-fx-border-radius: 8px;
 }
 
-#locked-password .label {
-	-fx-text-fill: app-fg;
-	-fx-background-color: app-bg-surface-dp4;
-	-fx-text-overrun: leading-ellipsis;
-	-fx-label-padding: 0 8px 0 8px;
-}
-
 #locked-unlock {
 	-fx-alignment: center;
 	-fx-text-alignment: center;
-	-fx-effect: app-bg-shadow-dp4;
 	-fx-text-fill: app-bg;
 	-fx-background-color: app-bg-primary;
+	-fx-effect: app-bg-shadow-dp4;
 	-fx-font-weight: bold;
 	-fx-max-width: infinity;
 }

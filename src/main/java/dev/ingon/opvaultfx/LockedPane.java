@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 
 import dev.ingon.opvault.Profile;
 import dev.ingon.opvault.ProfileException;
+import dev.ingon.opvault.ProfileException.InvalidPasswordException;
 import dev.ingon.opvault.SecureString;
 import dev.ingon.opvault.Security;
 import dev.ingon.opvault.Vault;
@@ -14,6 +15,7 @@ import dev.ingon.opvault.VaultException.VaultProfilesException;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
@@ -25,8 +27,12 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 
 public class LockedPane extends VBox {
@@ -164,8 +170,8 @@ public class LockedPane extends VBox {
             settings.setVault(this.vault.path.toString());
             settings.setProfile(this.profile.path.getFileName().toString());
             settings.save();
-        } catch(ProfileException e) {
-            passwordFld.reset(e.getMessage());
+        } catch(InvalidPasswordException e) {
+            passwordFld.reset("Wrong password");
         } catch (SettingsException e) {
             App.showError("Cannot save settings", e);
         }
@@ -290,20 +296,62 @@ public class LockedPane extends VBox {
     }
 
     private static class SecurePasswordFieldSkin extends SkinBase<SecurePasswordField> {
-        private final Label pass = new Label();
+        private final Pane group = new Pane();
+        private final Text text = new Text();
+        private final Rectangle clip = new Rectangle();
         
         protected SecurePasswordFieldSkin(SecurePasswordField control) {
             super(control);
             
-            getChildren().add(pass);
+            clip.setSmooth(false);
+            clip.setX(0);
+            clip.widthProperty().bind(group.widthProperty());
+            clip.heightProperty().bind(group.heightProperty());
+            group.setClip(clip);
+            
+            group.getChildren().add(text);
+            getChildren().add(group);
+            
+            text.setManaged(false);
+            
+            group.getStyleClass().add("pane");
+            text.getStyleClass().add("text");
             
             control.len.addListener((__, ___, len) -> {
+                if (len.intValue() == 0) {
+                    String err = getSkinnable().error.get();
+                    if (err == null) {
+                        text.setFill(Color.rgb(255, 255, 255, 0.6));
+                        text.setText("Enter master password");
+                    } else {
+                        text.setFill(Color.web("#cf6679"));
+                        text.setText(err);
+                    }
+                    return;
+                }
+                
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0, n = len.intValue(); i < n; i++) {
                     sb.append("\u25CF");
                 }
-                pass.setText(sb.toString());
+                text.setFill(Color.rgb(255, 255, 255, 0.87));
+                text.setText(sb.toString());
             });
+            
+            text.setFill(Color.rgb(255, 255, 255, 0.6));
+            text.setText("Enter master password");
+        }
+        
+        @Override
+        protected void layoutChildren(double contentX, double contentY, double contentWidth, double contentHeight) {
+            super.layoutChildren(contentX, contentY, contentWidth, contentHeight);
+            
+            final Bounds textNodeBounds = text.getLayoutBounds();
+            final double ascent = text.getBaselineOffset();
+            final double descent = textNodeBounds.getHeight() - ascent;
+            final double textY = (ascent + group.getHeight() - descent) / 2;
+            
+            text.setY(textY);
         }
     }
 }
