@@ -151,15 +151,17 @@
 }
 
 #locked-password {
-	-fx-alignment: left;
-	-fx-spacing: 8px;
-	-fx-fill-height: false;
+	-fx-padding: 8px;
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-background-radius: 8px;
-	-fx-padding: 8px;
 	-fx-effect: app-bg-shadow-dp4;
 	-fx-border-color: app-bg;
 	-fx-border-radius: 8px;
+}
+
+#locked-password .caret {
+	-fx-fill: app-fg-high;
+	-fx-stroke: app-fg-high;
 }
 
 #locked-unlock {

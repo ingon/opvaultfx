@@ -7,34 +7,19 @@ import java.nio.file.Paths;
 import dev.ingon.opvault.Profile;
 import dev.ingon.opvault.ProfileException;
 import dev.ingon.opvault.ProfileException.InvalidPasswordException;
-import dev.ingon.opvault.SecureString;
-import dev.ingon.opvault.Security;
 import dev.ingon.opvault.Vault;
 import dev.ingon.opvault.VaultException;
 import dev.ingon.opvault.VaultException.VaultProfilesException;
-import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.event.ActionEvent;
-import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.scene.control.Skin;
-import javafx.scene.control.SkinBase;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 
 public class LockedPane extends VBox {
@@ -46,7 +31,7 @@ public class LockedPane extends VBox {
     private final Label profileValue = new Label();
     private final Button changeBtn = new Button("Change");
     
-    private final SecurePasswordField passwordFld = new SecurePasswordField();
+    private final SecureStringField passwordFld = new SecureStringField();
     private final Button unlockBtn = new Button("Unlock");
     
     private static Settings settings;
@@ -156,12 +141,12 @@ public class LockedPane extends VBox {
     }
     
     private void act(ActionEvent ev) {
-        if (passwordFld.text == null) {
+        if (passwordFld.isEmpty()) {
             return;
         }
         
         try {
-            profile.unlock(passwordFld.text);
+            profile.unlock(passwordFld.get());
             passwordFld.reset(null);
             fireEvent(ProfileEvent.unlock(profile));
             
@@ -220,160 +205,6 @@ public class LockedPane extends VBox {
             App.showError("Cannot load vault", e);
         } catch (ProfileException e) {
             App.showError("Cannot load profile", e);
-        }
-    }
-    
-    private static class SecurePasswordField extends Control {
-        private SecureString text = null;
-        
-        private final SimpleIntegerProperty len = new SimpleIntegerProperty(this, "len", 0);
-        private final SimpleStringProperty error = new SimpleStringProperty(this, "error");
-        
-        public SecurePasswordField() {
-            setFocusTraversable(true);
-            setFocused(true);
-            
-            setOnMouseClicked((__) -> {
-                requestFocus();
-            });
-            
-            setOnKeyTyped((e) -> {
-                if (KeyEvent.CHAR_UNDEFINED.equals(e.getCharacter())) {
-                    return;
-                }
-                
-                char[] data = e.getCharacter().toCharArray();
-                if (data.length != 1) {
-                    throw new UnsupportedOperationException("no idea");
-                }
-                
-                switch (data[0]) {
-                case 8: 
-                case 127:
-                    delete();
-                    break;
-                case 9:
-                    break;
-                case 13:
-                    fireEvent(new ActionEvent());
-                    break;
-                default:
-                    append(data);
-                }
-            });
-        }
-        
-        private void reset(String errorStr) {
-            error.set(errorStr);
-            text.close();
-            text = null;
-            len.set(0);
-        }
-        
-        private void delete() {
-            if (text != null) {
-                text = text.delete(1);
-                if (text == null) {
-                    len.set(0);
-                } else {
-                    len.set(len.get() - 1);
-                }
-            }
-        }
-        
-        private void append(char[] data) {
-            if (error.get() != null) {
-                error.set(null);
-            }
-            
-            text = text == null ? new SecureString(data) : text.append(data);
-            len.set(len.get() + 1);
-            Security.wipe(data);
-        }
-        
-        @Override
-        protected Skin<?> createDefaultSkin() {
-            return new SecurePasswordFieldSkin(this);
-        }
-    }
-
-    private static class SecurePasswordFieldSkin extends SkinBase<SecurePasswordField> {
-        private final Pane group = new Pane();
-        private final Text text = new Text();
-        private final Rectangle clip = new Rectangle();
-        
-        private final ObservableDoubleValue textRight;
-
-        protected SecurePasswordFieldSkin(SecurePasswordField control) {
-            super(control);
-        
-            textRight = new DoubleBinding() {
-                { bind(group.widthProperty()); }
-                @Override protected double computeValue() {
-                    return group.getWidth();
-                }
-            };
-
-            clip.setSmooth(false);
-            clip.setX(0);
-            clip.widthProperty().bind(group.widthProperty());
-            clip.heightProperty().bind(group.heightProperty());
-            group.setClip(clip);
-            
-            group.getChildren().add(text);
-            getChildren().add(group);
-            
-            text.setManaged(false);
-            
-            group.getStyleClass().add("pane");
-            text.getStyleClass().add("text");
-            
-            control.len.addListener((__, ___, len) -> {
-                if (len.intValue() == 0) {
-                    String err = getSkinnable().error.get();
-                    if (err == null) {
-                        text.setFill(Color.rgb(255, 255, 255, 0.6));
-                        text.setText("Enter master password");
-                    } else {
-                        text.setFill(Color.web("#cf6679"));
-                        text.setText(err);
-                    }
-                    return;
-                }
-                
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0, n = len.intValue(); i < n; i++) {
-                    sb.append("\u25CF");
-                }
-                text.setFill(Color.rgb(255, 255, 255, 0.87));
-                text.setText(sb.toString());
-                updateXpos();
-            });
-            
-            text.setFill(Color.rgb(255, 255, 255, 0.6));
-            text.setText("Enter master password");
-        }
-        
-        @Override
-        protected void layoutChildren(double contentX, double contentY, double contentWidth, double contentHeight) {
-            super.layoutChildren(contentX, contentY, contentWidth, contentHeight);
-            
-            final Bounds textNodeBounds = text.getLayoutBounds();
-            final double ascent = text.getBaselineOffset();
-            final double descent = textNodeBounds.getHeight() - ascent;
-            final double textY = (ascent + group.getHeight() - descent) / 2;
-            text.setY(textY);
-
-            updateXpos();
-        }
-        
-        private void updateXpos() {
-            double textNodeWidth = text.getLayoutBounds().getWidth();
-            if (textNodeWidth > textRight.get()) {
-                text.setX(textRight.get() - textNodeWidth);
-            } else {
-                text.setX(0);
-            }
         }
     }
 }
