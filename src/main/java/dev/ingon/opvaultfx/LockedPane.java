@@ -13,8 +13,6 @@ import dev.ingon.opvault.Vault;
 import dev.ingon.opvault.VaultException;
 import dev.ingon.opvault.VaultException.VaultProfilesException;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;

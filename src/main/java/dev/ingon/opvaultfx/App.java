@@ -28,13 +28,13 @@ public class App extends Application {
         });
         
         scene.addEventHandler(ProfileEvent.UNLOCK, (ev) -> {
-            unlockedPane.showProfile(ev.profile);
+            unlockedPane.show(ev.profile);
             scene.setRoot(unlockedPane);
         });
         
         scene.addEventHandler(ProfileEvent.LOCK, (ev) -> {
             scene.setRoot(lockedPane);
-            unlockedPane.clearProfile();
+            unlockedPane.hide();
             lockedPane.show();
         });
         
