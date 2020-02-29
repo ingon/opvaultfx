@@ -156,7 +156,7 @@
 	-fx-fill-height: false;
 	-fx-background-color: app-bg-surface-dp4;
 	-fx-background-radius: 8px;
-	-fx-padding: 8px 0 8px 8px;
+	-fx-padding: 8px;
 	-fx-effect: app-bg-shadow-dp4;
 	-fx-border-color: app-bg;
 	-fx-border-radius: 8px;

@@ -12,8 +12,12 @@ import dev.ingon.opvault.Security;
 import dev.ingon.opvault.Vault;
 import dev.ingon.opvault.VaultException;
 import dev.ingon.opvault.VaultException.VaultProfilesException;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
@@ -300,9 +304,18 @@ public class LockedPane extends VBox {
         private final Text text = new Text();
         private final Rectangle clip = new Rectangle();
         
+        private final ObservableDoubleValue textRight;
+
         protected SecurePasswordFieldSkin(SecurePasswordField control) {
             super(control);
-            
+        
+            textRight = new DoubleBinding() {
+                { bind(group.widthProperty()); }
+                @Override protected double computeValue() {
+                    return group.getWidth();
+                }
+            };
+
             clip.setSmooth(false);
             clip.setX(0);
             clip.widthProperty().bind(group.widthProperty());
@@ -336,6 +349,7 @@ public class LockedPane extends VBox {
                 }
                 text.setFill(Color.rgb(255, 255, 255, 0.87));
                 text.setText(sb.toString());
+                updateXpos();
             });
             
             text.setFill(Color.rgb(255, 255, 255, 0.6));
@@ -350,8 +364,18 @@ public class LockedPane extends VBox {
             final double ascent = text.getBaselineOffset();
             final double descent = textNodeBounds.getHeight() - ascent;
             final double textY = (ascent + group.getHeight() - descent) / 2;
-            
             text.setY(textY);
+
+            updateXpos();
+        }
+        
+        private void updateXpos() {
+            double textNodeWidth = text.getLayoutBounds().getWidth();
+            if (textNodeWidth > textRight.get()) {
+                text.setX(textRight.get() - textNodeWidth);
+            } else {
+                text.setX(0);
+            }
         }
     }
 }
