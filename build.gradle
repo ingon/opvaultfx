@@ -5,9 +5,17 @@ plugins {
     id 'org.beryx.jlink' version '2.12.0'
 }
 
+version = '0.3.0'
+group = 'dev.ingon'
+
 javafx {
     version = '13'
     modules = [ 'javafx.base', 'javafx.controls' ]
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 repositories {
@@ -18,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'dev.ingon:json-zero:1.0.1'
+    implementation 'dev.ingon:json-zero:1.0.2'
 
     testImplementation 'junit:junit:4.12'
 }

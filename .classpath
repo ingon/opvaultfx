@@ -36,7 +36,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/json-zero-1.0.1.jar">
+	<classpathentry kind="lib" path="lib/json-zero-1.0.2.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
