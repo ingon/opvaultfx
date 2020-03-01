@@ -71,10 +71,7 @@ public class ListPane extends VBox {
                 visibleItems.setPredicate(ALL_PREDICATE);
             } else {
                 var pattern = value.toLowerCase();
-                visibleItems.setPredicate((i) -> {
-                    var t = i.overview.getTitle();
-                    return t != null && !i.item.isTrashed() && t.toLowerCase().contains(pattern);
-                });
+                visibleItems.setPredicate((i) -> i.hasMatch(pattern));
             }
             
             if (!visibleItems.isEmpty()) {
@@ -149,6 +146,41 @@ public class ListPane extends VBox {
         public void clear() {
             this.item = null;
             this.overview = null;
+        }
+        
+        public boolean hasMatch(String pattern) {
+            if (item.isTrashed()) {
+                return false;
+            }
+            
+            String title = overview.getTitle();
+            if (title != null && title.toLowerCase().contains(pattern)) {
+                return true;
+            }
+            
+            String url = overview.getUrl();
+            if (url != null && url.toLowerCase().contains(pattern)) {
+                return true;
+            }
+            
+            if (overview.getUrls() != null) {
+                for (var u : overview.getUrls()) {
+                    var s = u.getU();
+                    if (s != null && s.toLowerCase().contains(pattern)) {
+                        return true;
+                    }
+                }
+            }
+            
+            if (overview.getTags() != null) {
+                for (var t : overview.getTags()) {
+                    if (t.toLowerCase().contains(pattern)) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
         }
     }
     
