@@ -199,6 +199,7 @@ public class LockedPane extends VBox {
             
             vaultValue.setText(splitPath(this.vault.path));
             profileValue.setText(this.profile.path.getFileName().toString());
+            passwordFld.requestFocus();
         } catch (VaultProfilesException e) {
             App.showError("Cannot load vault profiles", e);
         } catch (VaultException e) {

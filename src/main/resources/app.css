@@ -368,7 +368,7 @@
 	-fx-padding: 0.5em 0 0 0;
 }
 
-.item-attachment-btn {
+.item-section-type, .item-attachment-btn {
 	-fx-alignment: center;
 	-fx-text-alignment: center;
 	-fx-effect: app-bg-shadow-dp2;
@@ -382,11 +382,16 @@
 	-fx-alignment: center;
 }
 
-.password-copy, .password-type {
+.password-copy, .password-type, .totp-pane .button {
 	-fx-alignment: center;
 	-fx-text-alignment: center;
 	-fx-effect: app-bg-shadow-dp2;
 	-fx-text-fill: app-bg;
 	-fx-background-color: app-bg-primary;
 	-fx-font-weight: bold;
+}
+
+.totp-pane {
+	-fx-spacing: 0.5em;
+	-fx-alignment: center;
 }

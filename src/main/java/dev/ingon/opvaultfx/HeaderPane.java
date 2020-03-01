@@ -40,6 +40,7 @@ public class HeaderPane extends StackPane {
     
     public void clearProfile() {
         this.profile = null;
+        search.setText("");
     }
     
     public ReadOnlyStringProperty searchTextProperty() {

@@ -44,7 +44,7 @@ public class PasswordPane extends HBox {
 
         HBox.setHgrow(pwd, Priority.ALWAYS);
         HBox.setHgrow(copy, Priority.NEVER);
-        HBox.setHgrow(copy, Priority.NEVER);
+        HBox.setHgrow(type, Priority.NEVER);
         getChildren().addAll(pwd, copy, type);
     }
 }

@@ -102,7 +102,9 @@ public class ListPane extends VBox {
             }
         }
         
-        this.list.getSelectionModel().select(this.visibleItems.get(0));
+        if (!visibleItems.isEmpty()) {
+            list.getSelectionModel().select(visibleItems.get(0));
+        }
     }
     
     public void clearProfile() {
