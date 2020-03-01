@@ -1,13 +1,12 @@
 package dev.ingon.opvaultfx;
 
-import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
 class KeyboardChar {
-    private final int code;
-    private final int modifier;
+    protected final int code;
+    protected final int modifier;
     
     private KeyboardChar(int code) {
         this(code, KeyEvent.VK_UNDEFINED);
@@ -16,18 +15,6 @@ class KeyboardChar {
     private KeyboardChar(int code, int modifier) {
         this.code = code;
         this.modifier = modifier;
-    }
-    
-    public void type(Robot r) {
-        if (modifier != KeyEvent.VK_UNDEFINED) {
-            r.keyPress(modifier);
-        }
-        r.keyPress(code);
-        r.delay(50);
-        r.keyRelease(code);
-        if (modifier != KeyEvent.VK_UNDEFINED) {
-            r.keyRelease(modifier);
-        }
     }
 
     private static final Map<Character, KeyboardChar> COMBOS = new HashMap<Character, KeyboardChar>();
@@ -77,6 +64,8 @@ class KeyboardChar {
         
         COMBOS.put('`', new KeyboardChar(KeyEvent.VK_BACK_QUOTE));
         COMBOS.put('~', new KeyboardChar(KeyEvent.VK_BACK_QUOTE, KeyEvent.VK_SHIFT));
+        
+        COMBOS.put(' ', new KeyboardChar(KeyEvent.VK_SPACE));
     }
     
     public static KeyboardChar get(char ch) {
