@@ -14,7 +14,7 @@
 ## Running
 
 To run `opvaultfx` (on linux)* you need to:
-* Install OpenJDK13 (may work with other versions)**
+* Install OpenJDK 11 **
 * Download and extract `dist.zip`
 * Run `./bin/opvaultfx`
   
@@ -26,7 +26,7 @@ To test the app, you can use [OPVault sample data](https://cache.agilebits.com/s
 
 ### From source
 
-To run from source, clone the repository and run `./gradlew run`. Tested with OpenJDK 13 on PopOS 18.04.
+To run from source, clone the repository and run `./gradlew run`. Tested with OpenJDK 11 on PopOS 18.04.
 
 ## Building
 
