@@ -5,6 +5,7 @@ module dev.ingon.opvaultfx {
     
     requires transitive javafx.graphics;
     requires transitive java.sql;
+    requires java.desktop;
     
     exports dev.ingon.opvault;
     exports dev.ingon.opvaultfx;

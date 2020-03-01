@@ -382,7 +382,7 @@
 	-fx-alignment: center;
 }
 
-.password-copy {
+.password-copy, .password-fill {
 	-fx-alignment: center;
 	-fx-text-alignment: center;
 	-fx-effect: app-bg-shadow-dp2;

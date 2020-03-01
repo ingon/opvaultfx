@@ -107,4 +107,10 @@ public class Security {
             data[i] = '\0';
         }
     }
+    
+    public static void wipe(int[] data) {
+        for (int i = 0, n = data.length; i < n; i++) {
+            data[i] = 0;
+        }
+    }
 }
