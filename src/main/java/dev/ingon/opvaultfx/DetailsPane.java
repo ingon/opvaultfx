@@ -74,11 +74,11 @@ public class DetailsPane extends VBox {
     public void clearItem() {
         item.setValue(null);
         overview.setValue(null);
+        detail.setValue(null);
         
         icon.setImage(null);
         title.setText("");
         subtitle.setText("");
-        detail.setValue(null);
         
         fields.clear();
         sections.clear();

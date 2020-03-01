@@ -38,7 +38,7 @@ public class PasswordPane extends HBox {
                 robot.focusPreviousApp();
                 robot.type(data);
             } catch (AWTException e) {
-                App.showError("Cannot auto type", e.getMessage());
+                App.showError("Cannot auto type", e);
             }
         });
 
