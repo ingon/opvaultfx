@@ -14,8 +14,8 @@
 ## Running
 
 To run `opvaultfx` (on linux)* you need to:
-* Install OpenJDK 11 **
-* Download and extract `dist.zip`
+* Install OpenJDK 11 (or up) **
+* Download and extract the latest `opvault-X.Y.Z-linux.zip`
 * Run `./bin/opvaultfx`
   
 &ast; Builds for MacOS and Windows are in works, try running from source on these OSes
