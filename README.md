@@ -10,12 +10,13 @@
 * Design. Attempts to implement google's material design (with mixed results)
 * Quick filter to find the items
 * Supports TOTP (HOTP is not supported since it requires write access to the vault)
+* Supports auto-type. Types an item password (or a combination of user/password) to the previous window.
 
 ## Running
 
 To run `opvaultfx` (on linux)* you need to:
 * Install OpenJDK 11 (or up) **
-* Download and extract the latest `opvault-X.Y.Z-linux.zip`
+* Download and extract the latest (opvault-X.Y.Z-linux.zip)[https://github.com/ingon/opvaultfx/releases/download/0.3.0/opvaultfx-0.3.0-linux.zip]
 * Run `./bin/opvaultfx`
   
 &ast; Builds for MacOS and Windows are in works, try running from source on these OSes
