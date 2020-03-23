@@ -395,3 +395,23 @@
 	-fx-spacing: 0.5em;
 	-fx-alignment: center;
 }
+
+.item-dates {
+	-fx-spacing: 0.3em;
+	-fx-padding: 1em 0 1em 0;
+}
+
+.item-dates .label {
+	-fx-padding: 0.5em 0 0 0.5em;
+	-fx-text-fill: app-fg-medium;
+	-fx-font-size: 13pt;
+}
+
+.item-dates .text-field {
+	-fx-background-color: app-bg-surface-dp2;
+	-fx-text-fill: app-fg-high;
+	-fx-highlight-fill: app-bg-primary;
+	-fx-highlight-text-fill: app-bg;
+	-fx-effect: app-bg-shadow-dp2;
+	-fx-padding: 0.5em;
+}

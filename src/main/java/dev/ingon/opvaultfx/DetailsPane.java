@@ -46,6 +46,7 @@ public class DetailsPane extends VBox {
     private final ItemSectionsPane sectionsPane = new ItemSectionsPane(sections);
     private final ItemURLsPane urlsPane = new ItemURLsPane(overview);
     private final ItemAttachmentsPane attachmentsPane = new ItemAttachmentsPane(attachments);
+    private final ItemDatesPane datesPane = new ItemDatesPane(item);
     
     public DetailsPane() {
         setId("details");
@@ -65,7 +66,7 @@ public class DetailsPane extends VBox {
         headerGrid.add(subtitle, 1, 1, 1, 1);
 
         detailBox.setId("details-data");
-        detailBox.getChildren().addAll(passwordPane, fieldsPane, sectionsPane, notesPane, urlsPane, attachmentsPane);
+        detailBox.getChildren().addAll(passwordPane, fieldsPane, sectionsPane, notesPane, urlsPane, attachmentsPane, datesPane);
         
         detailScroll.setFitToWidth(true);
         getChildren().add(detailScroll);
@@ -132,6 +133,8 @@ public class DetailsPane extends VBox {
         if (overview.getUrl() != null || (overview.getUrls() != null && !overview.getUrls().isEmpty())) {
             detailBox.getChildren().add(urlsPane);
         }
+
+        detailBox.getChildren().add(datesPane);
         
         detailScroll.setVvalue(0);
     }
