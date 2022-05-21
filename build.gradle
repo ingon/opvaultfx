@@ -1,25 +1,25 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
-    id 'org.beryx.jlink' version '2.21.4'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.beryx.jlink' version '2.25.0'
 }
 
 version = '0.4.0'
 group = 'dev.ingon'
 
 javafx {
-    version = '14'
+    version = '17'
     modules = [ 'javafx.base', 'javafx.controls' ]
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     flatDir {
        dirs 'lib'
     }
@@ -32,7 +32,8 @@ dependencies {
 }
 
 application {
-    mainClassName = 'dev.ingon.opvaultfx/dev.ingon.opvaultfx.App'
+    mainModule = 'dev.ingon.opvaultfx'
+    mainClass = 'dev.ingon.opvaultfx.App'
 }
 
 startScripts {
