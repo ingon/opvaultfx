@@ -12,7 +12,7 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-        fxjdk = (pkgs.jdk.override { enableJavaFX = true; });
+        fxjdk = (pkgs.jdk17.override { enableJavaFX = true; });
         fxgradle = (pkgs.gradle_7.override { java = fxjdk; });
       in
       {
