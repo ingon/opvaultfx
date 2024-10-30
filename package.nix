@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, jdk, gradle, makeWrapper, makeDesktopItem, ... }:
+{ lib, stdenv, fetchFromGitHub, jdk, gradle, makeWrapper, makeDesktopItem, copyDesktopItems, ... }:
 let
   self = stdenv.mkDerivation rec {
     pname = "opvaultfx";
@@ -23,6 +23,7 @@ let
     nativeBuildInputs = [
       gradle
       makeWrapper
+      copyDesktopItems
     ];
 
     buildInputs = [
@@ -38,9 +39,7 @@ let
       cp build/distributions/${pname}-${version}/lib/* $out/lib
       rm $out/lib/javafx-base-17.jar $out/lib/javafx-graphics-17.jar
       makeWrapper $out/bin/opvaultfx-unwrapped $out/bin/opvaultfx --set JAVA_HOME ${jdk}
-
-      cp -r ${desktopItem}/share/applications $out/share
-      
+  
       runHook postInstall
     '';
 
