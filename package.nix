@@ -4,11 +4,15 @@ let
     pname = "opvaultfx";
     version = "0.4.0";
 
-    src = fetchFromGitHub {
-      owner = "ingon";
-      repo = "opvaultfx";
-      rev = "master";
-      hash = "sha256-h/HNRZHUG4HUJZFBxwPgU6hRwbEbY3kPpDkB5ib+R04=";
+    src = lib.fileset.toSource {
+      root = ./.;
+      fileset = lib.fileset.unions [
+        ./lib
+        ./src
+        ./build.gradle
+        ./settings.gradle
+        ./LICENSE
+      ];
     };
 
     mitmCache = gradle.fetchDeps {
