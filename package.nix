@@ -39,18 +39,19 @@ let
       rm $out/lib/javafx-base-17.jar $out/lib/javafx-graphics-17.jar
       makeWrapper $out/bin/opvaultfx-unwrapped $out/bin/opvaultfx --set JAVA_HOME ${jdk}
 
+      cp -r ${desktopItem}/share/applications $out/share
+      
       runHook postInstall
     '';
 
-    desktopItems = [
-      (makeDesktopItem {
-        name = pname;
-        desktopName = pname;
-        exec = pname;
-        comment = "JavaFX application to read 1password's opvaults";
-        categories = [ "Utility" ];
-      })
-    ];
+    desktopItem = makeDesktopItem {
+      name = pname;
+      desktopName = pname;
+      exec = pname;
+      comment = "JavaFX application to read 1password's opvaults";
+      categories = [ "Utility" ];
+    };
+    desktopItems = [ desktopItem ];
 
     meta = with lib; {
       description = "JavaFX application to read 1password's opvaults";
