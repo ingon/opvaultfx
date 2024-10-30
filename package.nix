@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, jdk, gradle, ... }:
+{ lib, stdenv, fetchFromGitHub, jdk, gradle, makeWrapper, ... }:
 let
   self = stdenv.mkDerivation rec {
     pname = "opvaultfx";
@@ -22,6 +22,7 @@ let
 
     nativeBuildInputs = [
       gradle
+      makeWrapper
     ];
 
     buildInputs = [
@@ -33,9 +34,10 @@ let
 
       mkdir -p $out/bin $out/lib
       tar --extract --verbose --directory build/distributions --file build/distributions/${pname}-${version}.tar
-      cp build/distributions/${pname}-${version}/bin/* $out/bin
+      cp build/distributions/${pname}-${version}/bin/opvaultfx $out/bin/opvaultfx-unwrapped
       cp build/distributions/${pname}-${version}/lib/* $out/lib
       rm $out/lib/javafx-base-17.jar $out/lib/javafx-graphics-17.jar
+      makeWrapper $out/bin/opvaultfx-unwrapped $out/bin/opvaultfx --set JAVA_HOME ${jdk}
 
       runHook postInstall
     '';
