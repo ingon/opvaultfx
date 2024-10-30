@@ -23,5 +23,6 @@
             fxgradle
           ];
         };
+        packages.default = pkgs.callPackage ./package.nix { jdk = fxjdk; gradle = fxgradle; };
       });
 }
