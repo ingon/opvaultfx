@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, jdk, gradle, makeWrapper, ... }:
+{ lib, stdenv, fetchFromGitHub, jdk, gradle, makeWrapper, makeDesktopItem, ... }:
 let
   self = stdenv.mkDerivation rec {
     pname = "opvaultfx";
@@ -41,6 +41,16 @@ let
 
       runHook postInstall
     '';
+
+    desktopItems = [
+      (makeDesktopItem {
+        name = pname;
+        desktopName = pname;
+        exec = pname;
+        comment = "JavaFX application to read 1password's opvaults";
+        categories = [ "Utility" ];
+      })
+    ];
 
     meta = with lib; {
       description = "JavaFX application to read 1password's opvaults";
