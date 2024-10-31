@@ -17,7 +17,7 @@
       in
       {
         formatter = pkgs.nixpkgs-fmt;
-        devShell = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           buildInputs = [
             fxjdk
             fxgradle
