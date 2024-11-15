@@ -49,6 +49,10 @@ public class ItemAttachment {
         } catch (ParseException e) {
             throw new ItemAttachmentInvalidMetadataException(path, e);
         }
+
+        if (attachment.trashed != null && attachment.trashed.equals(true)) {
+            return;
+        }
         
         attachment.version = version;
         attachment.icon = Arrays.copyOfRange(input, HEADER_MIN_SIZE + metadataLen, HEADER_MIN_SIZE + metadataLen + iconLen);
@@ -64,6 +68,7 @@ public class ItemAttachment {
         handler.stringProperty("itemUUID", (t, o) -> t.itemUUID = o);
         handler.numberProperty("contentsSize", (t, o) -> t.contentsSize = o.intValue());
         handler.booleanProperty("external", (t, o) -> t.external = o);
+        handler.booleanProperty("trashed", (t, o) -> t.trashed = o);
 
         handler.instantProperty("createdAt", (t, o) -> t.createdAt = o);
         handler.instantProperty("updatedAt", (t, o) -> t.updatedAt = o);
@@ -80,6 +85,7 @@ public class ItemAttachment {
     private String itemUUID;
     private int contentsSize;
     private Boolean external;
+    private Boolean trashed;
 
     private Instant createdAt;
     private Instant updatedAt;
