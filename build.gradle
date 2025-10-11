@@ -20,13 +20,13 @@ java {
 
 repositories {
     mavenCentral()
-    flatDir {
-       dirs 'lib'
+    maven {
+        url = uri('https://repo1.maven.org/maven2/')
     }
 }
 
 dependencies {
-    implementation 'dev.ingon:json-zero:1.0.2'
+    implementation group: 'dev.ingon', name: 'json-zero', version: '1.0.2'
 
     testImplementation 'junit:junit:4.12'
 }

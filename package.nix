@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, jdk, gradle, makeWrapper, makeDesktopItem, copyDesktopItems, ... }:
+{ lib, stdenv, jdk, gradle, makeWrapper, makeDesktopItem, copyDesktopItems, ... }:
 let
   self = stdenv.mkDerivation rec {
     pname = "opvaultfx";
@@ -7,7 +7,6 @@ let
     src = lib.fileset.toSource {
       root = ./.;
       fileset = lib.fileset.unions [
-        ./lib
         ./src
         ./build.gradle
         ./settings.gradle
