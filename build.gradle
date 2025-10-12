@@ -24,6 +24,7 @@ repositories {
 
 dependencies {
     implementation group: 'dev.ingon', name: 'json-zero', version: '1.0.2'
+    implementation group: 'dev.ingon', name: 'opvaultj', version: '1.0.0'
 
     testImplementation 'junit:junit:4.12'
 }

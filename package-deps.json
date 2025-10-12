@@ -95,12 +95,14 @@
     },
     "org/openjfx#javafx/17": {
       "pom": "sha256-Mc+sHCBGlsqDJZzWCcK2kks3dBR+MOM9vEX+kKHnuww="
-    }
-  },
-  "https://repo1.maven.org/maven2": {
+    },
     "dev/ingon#json-zero/1.0.2": {
       "pom": "sha256-QvfswTbO5jrSnLl5zat6pU+ZUji2FUX/O6rr16u7P/o=",
       "jar": "sha256-NV+EFO8OYb8NySpVySYpIHLWVmupy+91wK0AG8Vnf50="
+    },
+    "dev/ingon#opvaultj/1.0.0": {
+      "pom": "sha256-nPlekx89pYtmrZ6pQoAB9VeWkiQ4JnQejX7jFM6k0xo=",
+      "jar": "sha256-HpeN4podrmVHM4xN5cKaT5Rt/QI4IlOp/NIakzLExx8="
     }
   }
 }
