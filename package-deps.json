@@ -103,6 +103,10 @@
     "dev/ingon#opvaultj/1.0.0": {
       "pom": "sha256-nPlekx89pYtmrZ6pQoAB9VeWkiQ4JnQejX7jFM6k0xo=",
       "jar": "sha256-HpeN4podrmVHM4xN5cKaT5Rt/QI4IlOp/NIakzLExx8="
+    },
+    "dev/ingon#otpj/1.0.0": {
+      "pom": "sha256-UN5iGAZNPg2Pgw5UNaWwp09JDrNxXd0lZUbEIe2Gh4Y=",
+      "jar": "sha256-pAsi2tjuJbenOEJXOrUcahzlc2CpJM0yq2v1W/21h2U="
     }
   }
 }
