@@ -5,6 +5,8 @@ import java.net.URI;
 
 import dev.ingon.opvault.SecureString;
 import dev.ingon.otp.TOTPGenerator;
+import dev.ingon.otp.OTPAlgorithm;
+import dev.ingon.otp.Base32;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,8 +30,12 @@ public class TOTPPane extends HBox {
         
         this.generator = secret.apply((chs) -> {
             String can = new String(chs).replace("\\/", "/");
-            URI uri = URI.create(can);
-            return TOTPGenerator.fromURI(uri);
+            if (can.startsWith("otpauth://")) {
+                URI uri = URI.create(can);
+                return TOTPGenerator.fromURI(uri);
+            } else {
+                return TOTPGenerator.fromEncodedSecret(can);
+            }
         });
         
         var space = new Region();

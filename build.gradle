@@ -24,8 +24,10 @@ repositories {
 
 dependencies {
     implementation group: 'dev.ingon', name: 'json-zero', version: '1.0.2'
-    implementation group: 'dev.ingon', name: 'opvaultj', version: '1.0.0'
-    implementation group: 'dev.ingon', name: 'otpj', version: '1.0.0'
+    implementation group: 'dev.ingon', name: 'opvaultj', version: '1.0.1'
+    implementation group: 'dev.ingon', name: 'otpj', version: '1.0.1'
+    // implementation files('../opvaultj/build/libs/opvaultj-1.0.1.jar')
+    // implementation files('../otpj/build/libs/otpj-1.0.1.jar')
 
     testImplementation 'junit:junit:4.12'
 }
