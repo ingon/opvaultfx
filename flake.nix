@@ -12,8 +12,8 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-        fxjdk = (pkgs.jdk17.override { enableJavaFX = true; });
-        fxgradle = (pkgs.gradle_7.override { java = fxjdk; });
+        fxjdk = (pkgs.jdk21.override { enableJavaFX = true; });
+        fxgradle = (pkgs.gradle_8.override { java = fxjdk; });
       in
       {
         formatter = pkgs.nixpkgs-fmt;
